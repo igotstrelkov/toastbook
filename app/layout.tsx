@@ -1,7 +1,9 @@
 import type { Metadata } from "next"
 import { Hanken_Grotesk, Inter, Newsreader, Space_Mono } from "next/font/google"
+import { ClerkProvider } from "@clerk/nextjs"
 
 import { ThemeProvider } from "@/components/theme-provider"
+import { WaitlistProvider } from "@/components/landing/WaitlistModal"
 import { cn } from "@/lib/utils"
 import "./globals.css"
 
@@ -52,7 +54,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  return (
+  // The waitlist form only renders when Clerk is configured; without a key the
+  // app still builds and the modal shows a setup hint instead.
+  const clerkEnabled = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+
+  const tree = (
     <html
       lang="en"
       suppressHydrationWarning
@@ -65,8 +71,14 @@ export default function RootLayout({
       )}
     >
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <WaitlistProvider clerkEnabled={clerkEnabled}>
+            {children}
+          </WaitlistProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
+
+  return clerkEnabled ? <ClerkProvider>{tree}</ClerkProvider> : tree
 }

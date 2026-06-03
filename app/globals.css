@@ -469,3 +469,52 @@ html.js .reveal.in { transform: none; }
 @media (prefers-reduced-motion: reduce) {
   html.js .reveal { transform: none; transition: none; }
 }
+
+/* ── waitlist modal ── */
+.waitlist-overlay {
+  position: fixed; inset: 0; z-index: 100;
+  background: color-mix(in oklab, var(--aloud-ink), transparent 45%);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+}
+.waitlist-content {
+  position: fixed; z-index: 101;
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: calc(100vw - 32px); max-width: 25rem;
+  max-height: calc(100svh - 32px); overflow: auto;
+  display: flex; justify-content: center;
+}
+.waitlist-content:focus-visible { outline: none; }
+.waitlist-close {
+  position: absolute; top: 8px; right: 8px; z-index: 1;
+  width: 32px; height: 32px; border: none; border-radius: 999px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  background: color-mix(in oklab, var(--aloud-paper), transparent 10%);
+  color: var(--aloud-ink-soft);
+  box-shadow: var(--shadow-card);
+  transition: color .15s, background .15s;
+}
+.waitlist-close:hover { color: var(--aloud-ink); background: var(--aloud-paper); }
+.waitlist-fallback {
+  background: var(--aloud-paper); border: 1px solid var(--aloud-line);
+  border-radius: 18px; padding: 36px 32px; box-shadow: var(--shadow-pop, var(--shadow-card));
+  text-align: center;
+}
+.waitlist-fallback h2 {
+  font-family: var(--font-newsreader, Georgia, serif); font-weight: 400;
+  font-size: 26px; margin: 0 0 10px;
+}
+.waitlist-fallback p { font-size: 14.5px; line-height: 1.6; color: var(--aloud-ink-soft); margin: 0; }
+.waitlist-fallback code {
+  font-family: var(--font-space-mono, monospace); font-size: 13px;
+  color: var(--aloud-accent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .waitlist-overlay[data-state="open"] { animation: waitlist-fade .2s ease; }
+  .waitlist-content[data-state="open"] { animation: waitlist-pop .22s cubic-bezier(.2,.7,.2,1); }
+}
+@keyframes waitlist-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes waitlist-pop {
+  from { opacity: 0; transform: translate(-50%, -48%) scale(0.97); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}

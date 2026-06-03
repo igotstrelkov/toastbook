@@ -1,6 +1,6 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
+import { CreateGuestbookButton } from "@/components/landing/CreateGuestbookButton"
 import { useEffect, useRef } from "react"
 
 export function StickyNav() {
@@ -40,9 +40,11 @@ export function StickyNav() {
         <a href="#faq">FAQ</a>
       </div>
       <div className="nav-cta">
-        <Button size="xs" variant="accent" className="rounded-full p-4" asChild>
-          <a href="#">Create your guestbook</a>
-        </Button>
+        <CreateGuestbookButton
+          size="xs"
+          variant="accent"
+          className="rounded-full p-4"
+        />
       </div>
     </nav>
   )

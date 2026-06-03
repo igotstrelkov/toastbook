@@ -1,3 +1,4 @@
+import { CreateGuestbookButton } from "@/components/landing/CreateGuestbookButton"
 import { CtaWave } from "@/components/landing/CtaWave"
 import { RevealScript } from "@/components/landing/RevealScript"
 import { StickyNav } from "@/components/landing/StickyNav"
@@ -93,13 +94,10 @@ export default function Page() {
                 long after the day is over.
               </p>
               <div className="hero-actions reveal">
-                <Button
+                <CreateGuestbookButton
                   variant="accent"
                   className="h-[54px] rounded-full px-6 text-base"
-                  asChild
-                >
-                  <a href="#">Create your guestbook</a>
-                </Button>
+                />
                 <Button
                   variant="ghost-brand"
                   className="h-[54px] rounded-full px-6 text-base"
@@ -301,13 +299,10 @@ export default function Page() {
                     <Tick /> Listen to messages as they arrive
                   </li>
                 </ul>
-                <Button
+                <CreateGuestbookButton
                   variant="ghost-brand"
                   className="h-12 w-full rounded-full text-sm"
-                  asChild
-                >
-                  <a href="#">Create your guestbook</a>
-                </Button>
+                />
               </div>
               <div className="price-col feature">
                 <div className="eyebrow price-eyebrow">Keepsake · one-time</div>
@@ -373,13 +368,10 @@ export default function Page() {
             </p>
             <CtaWave />
             <div className="reveal">
-              <Button
+              <CreateGuestbookButton
                 variant="accent"
                 className="h-[54px] rounded-full px-6 text-base"
-                asChild
-              >
-                <a href="#">Create your guestbook</a>
-              </Button>
+              />
             </div>
           </div>
         </section>
