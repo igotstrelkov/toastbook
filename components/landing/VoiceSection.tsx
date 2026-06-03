@@ -18,6 +18,9 @@ const SAMPLES: Sample[] = [
   { name: "Marcus Bell",     rel: "College roommate",    dur: 14, hue: 280, seed: "rec-marcus" },
 ]
 
+// Deterministic from static SAMPLES — computed once at module load.
+const BARS = SAMPLES.map((s) => seededBars(s.seed, 54))
+
 function fmt(s: number): string {
   s = Math.max(0, Math.floor(s))
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`
@@ -55,11 +58,11 @@ export function VoiceSection() {
   const [states, setStates] = useState<CardState[]>(
     SAMPLES.map(() => ({ playing: false, elapsed: 0, progress: 0 })),
   )
-  const barsData = useRef(SAMPLES.map((s) => seededBars(s.seed, 54)))
   const simStartRef = useRef<(number | null)[]>(SAMPLES.map(() => null))
   const simAtRef = useRef<number[]>(SAMPLES.map(() => 0))
   const rafRef = useRef<number | null>(null)
   const currentRef = useRef<number | null>(null)
+  const tickRef = useRef<(idx: number) => void>(() => {})
 
   const cancelRaf = useCallback(() => {
     if (rafRef.current !== null) {
@@ -105,10 +108,15 @@ export function VoiceSection() {
       setStates((s) =>
         s.map((c, i) => (i === idx ? { ...c, elapsed, progress: elapsed / dur } : c)),
       )
-      rafRef.current = requestAnimationFrame(() => tick(idx))
+      rafRef.current = requestAnimationFrame(() => tickRef.current(idx))
     },
     [],
   )
+
+  // Route the recursive RAF call through a ref so `tick` doesn't reference itself.
+  useEffect(() => {
+    tickRef.current = tick
+  }, [tick])
 
   const play = useCallback(
     (idx: number) => {
@@ -164,7 +172,7 @@ export function VoiceSection() {
         </div>
         <div className="voices">
           {SAMPLES.map((s, idx) => {
-            const bars = barsData.current[idx]
+            const bars = BARS[idx]
             const state = states[idx]
             const nOn = Math.round(state.progress * bars.length)
             return (

@@ -7,7 +7,7 @@ import { Check, Download, Plus, QrCode } from "lucide-react"
 
 const testimonials = [
   {
-    text: "We have a thousand photos. But hearing my dad's voice from that night — that's the thing I play when I miss him.",
+    text: "We have a thousand photos. But hearing my dad's voice from that night, that's the thing I play when I miss him.",
     name: "Priya & Dev",
     date: "Married June 2026",
   },
@@ -26,7 +26,7 @@ const testimonials = [
 const faqItems = [
   {
     q: "Do guests need to download an app?",
-    a: "Never. Guests scan the QR code or open your link and the recorder opens right in their phone's browser. No app, no account, no sign-up — they tap record and talk.",
+    a: "Never. Guests scan the QR code or open your link and the recorder opens right in their phone's browser. No app, no account, no sign-up, they tap record and talk.",
   },
   {
     q: "Does it work on iPhone and Android?",
@@ -34,7 +34,7 @@ const faqItems = [
   },
   {
     q: "How long can a message be?",
-    a: "Up to 60 seconds each — long enough for a heartfelt note or a toast, short enough that guests don't overthink it. They can re-record as many times as they like before sending.",
+    a: "Up to 60 seconds each, long enough for a heartfelt note or a toast, short enough that guests don't overthink it. They can re-record as many times as they like before sending.",
   },
   {
     q: "Who can hear the messages?",
@@ -42,11 +42,11 @@ const faqItems = [
   },
   {
     q: "Can I download and keep the recordings?",
-    a: "Yes. With the one-time $49 unlock you can download every message individually or grab the whole collection as a zip — they're yours to keep, forever.",
+    a: "Yes. With the one-time $49 unlock you can download every message individually or grab the whole collection as a zip, they're yours to keep, forever.",
   },
   {
     q: "Why voices instead of photos?",
-    a: "Plenty of apps capture how your day looked. Aloud captures how it sounded — laughter, nerves, the catch in someone's voice. It's the closest thing to being back in the room.",
+    a: "Plenty of apps capture how your day looked. Aloud captures how it sounded, laughter, nerves, the catch in someone's voice. It's the closest thing to being back in the room.",
   },
 ]
 
@@ -88,7 +88,7 @@ export default function Page() {
                 Keep every <em>voice</em> from your day.
               </h1>
               <p className="lede reveal">
-                Guests scan one code and leave a spoken message — no app, no
+                Guests scan one code and leave a spoken message, no app, no
                 account. You keep a private gallery of every voice, to play back
                 long after the day is over.
               </p>
@@ -220,7 +220,7 @@ export default function Page() {
                 <h3>Share one code</h3>
                 <p>
                   Pop the QR on the tables or text the link to anyone who
-                  couldn&apos;t make it. Guests just tap and talk — no app, no
+                  couldn&apos;t make it. Guests just tap and talk, no app, no
                   account.
                 </p>
               </div>
@@ -280,8 +280,8 @@ export default function Page() {
               </h2>
               <p className="section-sub">
                 Start free and collect messages right away. When you&apos;re
-                ready to keep them, it&apos;s a single payment — no
-                subscription, ever.
+                ready to keep them, it&apos;s a single payment, no subscription,
+                ever.
               </p>
             </div>
             <div className="price-grid reveal">
@@ -369,8 +369,8 @@ export default function Page() {
             <div className="eyebrow reveal">Aloud</div>
             <p className="big reveal">Some things are meant to be heard.</p>
             <p className="sub reveal">
-              Start your guestbook today — it&apos;s free until you&apos;re
-              ready to keep it.
+              Start your guestbook today, it&apos;s free until you&apos;re ready
+              to keep it.
             </p>
             <CtaWave />
             <div className="reveal">
