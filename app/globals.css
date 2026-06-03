@@ -307,12 +307,9 @@ main, nav, footer { position: relative; z-index: 2; }
 @media (max-width: 760px) { .steps { grid-template-columns: 1fr; gap: 36px; } }
 
 /* ── voice cards ── */
-.voices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 52px; }
+.voices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 52px; }
 @media (max-width: 720px) {
-  .voices { grid-template-columns: 1fr; }
-  /* Thin bars so all 54 fit in the narrower mobile waveform */
-  .wave { gap: 1.5px; }
-  .wave > span { width: 2px; }
+  .voices { grid-template-columns: minmax(0, 1fr); }
 }
 .voice-card {
   background: var(--aloud-paper); border: 1px solid var(--aloud-line);
@@ -333,7 +330,7 @@ main, nav, footer { position: relative; z-index: 2; }
 }
 .voice-rel { font-size: 12px; color: var(--aloud-ink-faint); display: block; margin-top: 2px; }
 .voice-dur { font-family: var(--font-space-mono, monospace); font-size: 12px; color: var(--aloud-ink-soft); white-space: nowrap; letter-spacing: -0.02em; }
-.voice-row { display: flex; align-items: center; gap: 12px; }
+.voice-row { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .play-btn {
   width: 42px; height: 42px; border-radius: 50%; border: none; cursor: pointer; flex-shrink: 0;
   background: var(--aloud-ink); color: var(--aloud-paper);
@@ -348,6 +345,12 @@ main, nav, footer { position: relative; z-index: 2; }
 .wave { display: flex; align-items: center; gap: 2.5px; height: 38px; flex: 1; min-width: 0; overflow: hidden; cursor: pointer; color: var(--aloud-ink-faint); }
 .wave > span { width: 3px; border-radius: 99px; background: currentColor; opacity: 0.24; flex-shrink: 0; transition: opacity .08s, background .08s; }
 .wave > span.on { opacity: 1; background: var(--aloud-accent); }
+/* Thin the bars on mobile so more of the 54 are visible before clipping.
+   Placed after the base rules above so it wins on source order. */
+@media (max-width: 720px) {
+  .wave { gap: 1.5px; }
+  .wave > span { width: 2px; }
+}
 
 /* ── testimonials ── */
 .quotes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 56px; }
