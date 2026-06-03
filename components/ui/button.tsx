@@ -19,6 +19,10 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
         link: "text-primary underline-offset-4 hover:underline",
+        accent:
+          "border-transparent bg-[var(--aloud-accent)] text-[var(--aloud-accent-ink)] shadow-[0_10px_22px_-10px_color-mix(in_oklab,var(--aloud-accent),#000_10%)] hover:bg-[var(--aloud-accent-deep)] active:translate-y-px",
+        "ghost-brand":
+          "border-[var(--aloud-line)] bg-transparent text-[var(--aloud-ink)] hover:border-[var(--aloud-ink-faint)] hover:bg-[color-mix(in_oklab,var(--aloud-ink),transparent_96%)]",
       },
       size: {
         default:
