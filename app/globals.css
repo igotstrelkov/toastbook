@@ -449,6 +449,8 @@ main, nav, footer { position: relative; z-index: 2; }
 @media (max-width: 520px) {
   /* Stack hero CTA buttons full-width for easier tapping */
   .hero-actions { flex-direction: column; align-items: stretch; }
+  .hero-note { justify-content: center; gap: 5px; flex-wrap: nowrap; }
+  .hero-note span { font-size: 11px; white-space: nowrap; }
 }
 
 @media (max-width: 400px) {

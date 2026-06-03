@@ -30,7 +30,7 @@ const faqItems = [
   },
   {
     q: "Does it work on iPhone and Android?",
-    a: "Both. Because Aloud runs in the browser, it works on any modern phone. We ask for microphone access the moment a guest taps record, so recording starts instantly.",
+    a: "Both. Because Toastbook runs in the browser, it works on any modern phone. We ask for microphone access the moment a guest taps record, so recording starts instantly.",
   },
   {
     q: "How long can a message be?",
@@ -46,7 +46,7 @@ const faqItems = [
   },
   {
     q: "Why voices instead of photos?",
-    a: "Plenty of apps capture how your day looked. Aloud captures how it sounded, laughter, nerves, the catch in someone's voice. It's the closest thing to being back in the room.",
+    a: "Plenty of apps capture how your day looked. Toastbook captures how it sounded, laughter, nerves, the catch in someone's voice. It's the closest thing to being back in the room.",
   },
 ]
 
@@ -258,7 +258,6 @@ export default function Page() {
                   <div className="mark">&ldquo;</div>
                   <p>{t.text}</p>
                   <figcaption className="who">
-                    <span className="av" />
                     <span>
                       <b>{t.name}</b>
                       <span>{t.date}</span>
@@ -313,7 +312,7 @@ export default function Page() {
               <div className="price-col feature">
                 <div className="eyebrow price-eyebrow">Keepsake · one-time</div>
                 <div className="price-tag">
-                  <span className="amt">$49</span>
+                  <span className="amt">€49</span>
                   <span className="per">once, per wedding</span>
                 </div>
                 <p className="price-desc">
@@ -366,7 +365,7 @@ export default function Page() {
         {/* ── Closing CTA ── */}
         <section className="section ink-band">
           <div className="wrap cta-band">
-            <div className="eyebrow reveal">Aloud</div>
+            <div className="eyebrow reveal">Toastbook</div>
             <p className="big reveal">Some things are meant to be heard.</p>
             <p className="sub reveal">
               Start your guestbook today, it&apos;s free until you&apos;re ready
@@ -395,7 +394,7 @@ export default function Page() {
                 <span className="mark" aria-hidden="true">
                   <WaveformMark />
                 </span>
-                <span className="footer-name">Aloud</span>
+                <span className="footer-name">Toastbook</span>
               </div>
               <p className="footer-tag">
                 Made for the moments that pass too quickly.
@@ -419,8 +418,8 @@ export default function Page() {
             </div>
           </div>
           <div className="footer-base">
-            <span>© 2026 Aloud. A voice guestbook for weddings.</span>
-            <span>hello@aloud.gift</span>
+            <span>© 2026 Toastbook. A voice guestbook for weddings.</span>
+            <span>hello@Toastbook.gift</span>
           </div>
         </div>
       </footer>

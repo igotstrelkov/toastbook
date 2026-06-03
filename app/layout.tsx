@@ -1,23 +1,23 @@
 import type { Metadata } from "next"
-import { Inter, Newsreader, Hanken_Grotesk, Space_Mono } from "next/font/google"
+import { Hanken_Grotesk, Inter, Newsreader, Space_Mono } from "next/font/google"
 
-import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
+import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Aloud — A voice guestbook for weddings",
+  title: "Toastbook — A voice guestbook for weddings",
   description:
     "Guests scan one code and leave a spoken message — no app, no account. Keep a private gallery of every voice from your wedding day.",
   openGraph: {
-    title: "Aloud — A voice guestbook for weddings",
+    title: "Toastbook — A voice guestbook for weddings",
     description:
       "Guests scan one code and leave a spoken message — no app, no account. Keep a private gallery of every voice from your wedding day.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Aloud — A voice guestbook for weddings",
+    title: "Toastbook — A voice guestbook for weddings",
     description:
       "Guests scan one code and leave a spoken message — no app, no account.",
   },
@@ -57,11 +57,11 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
       className={cn(
-        "antialiased font-sans",
+        "font-sans antialiased",
         inter.variable,
         newsreader.variable,
         hanken.variable,
-        spaceMono.variable,
+        spaceMono.variable
       )}
     >
       <body>
