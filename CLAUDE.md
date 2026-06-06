@@ -32,7 +32,7 @@ The style is `radix-nova`. All aliases resolve through `@/` (e.g. `@/components/
 
 ### Theme system
 
-`components/theme-provider.tsx` wraps `next-themes` and wires a global `d` keypress hotkey to toggle dark/light mode. It is mounted at the root in `app/layout.tsx`. The `ThemeHotkey` inner component is intentionally not exported.
+`components/theme-provider.tsx` wraps `next-themes` and forces the light theme app-wide via `forcedTheme="light"` (with `enableSystem={false}`), so the OS preference and any saved `localStorage` value are ignored. It is mounted at the root in `app/layout.tsx`. Dark mode is intentionally disabled — there is no theme toggle.
 
 ### Utility
 
