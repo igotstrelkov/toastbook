@@ -1,21 +1,50 @@
 "use client"
 
-import { useState, useRef, useCallback, useEffect } from "react"
 import { seededBars } from "@/lib/bars"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 interface Sample {
   name: string
   rel: string
-  dur: number
+  src: string
+  dur: number // fallback shown until the file's real duration loads
   hue: number
   seed: string
 }
 
 const SAMPLES: Sample[] = [
-  { name: "Aunt Rosa",       rel: "Mother of the bride", dur: 26, hue: 32,  seed: "rec-rosa"   },
-  { name: "Grandpa Lou",     rel: "A toast, of course",  dur: 22, hue: 65,  seed: "rec-lou"    },
-  { name: "The Bridesmaids", rel: "All five of them",    dur: 18, hue: 150, seed: "rec-brides" },
-  { name: "Marcus Bell",     rel: "College roommate",    dur: 14, hue: 280, seed: "rec-marcus" },
+  {
+    name: "Victor",
+    rel: "The old family friend",
+    src: "/voices/1.wav",
+    dur: 26,
+    hue: 32,
+    seed: "rec-victor",
+  },
+  {
+    name: "Sarah",
+    rel: "Maid of honor",
+    src: "/voices/2.wav",
+    dur: 22,
+    hue: 65,
+    seed: "rec-sarah",
+  },
+  {
+    name: "Stephen",
+    rel: "The best man",
+    src: "/voices/3.wav",
+    dur: 18,
+    hue: 150,
+    seed: "rec-stephen",
+  },
+  {
+    name: "Nancy",
+    rel: "The little niece",
+    src: "/voices/4.wav",
+    dur: 14,
+    hue: 280,
+    seed: "rec-nancy",
+  },
 ]
 
 // Deterministic from static SAMPLES — computed once at module load.
@@ -52,17 +81,22 @@ interface CardState {
   playing: boolean
   elapsed: number
   progress: number
+  dur: number
 }
 
 export function VoiceSection() {
   const [states, setStates] = useState<CardState[]>(
-    SAMPLES.map(() => ({ playing: false, elapsed: 0, progress: 0 })),
+    SAMPLES.map((s) => ({
+      playing: false,
+      elapsed: 0,
+      progress: 0,
+      dur: s.dur,
+    }))
   )
-  const simStartRef = useRef<(number | null)[]>(SAMPLES.map(() => null))
-  const simAtRef = useRef<number[]>(SAMPLES.map(() => 0))
+  const audioRefs = useRef<(HTMLAudioElement | null)[]>(SAMPLES.map(() => null))
   const rafRef = useRef<number | null>(null)
   const currentRef = useRef<number | null>(null)
-  const tickRef = useRef<(idx: number) => void>(() => {})
+  const tickRef = useRef<() => void>(() => {})
 
   const cancelRaf = useCallback(() => {
     if (rafRef.current !== null) {
@@ -71,47 +105,22 @@ export function VoiceSection() {
     }
   }, [])
 
-  const stopCurrent = useCallback(
-    (reset = false) => {
-      cancelRaf()
-      const prev = currentRef.current
-      if (prev !== null) {
-        setStates((s) =>
-          s.map((c, i) =>
-            i === prev
-              ? { ...c, playing: false, elapsed: reset ? 0 : c.elapsed, progress: reset ? 0 : c.progress }
-              : c,
-          ),
-        )
-        if (reset) simAtRef.current[prev] = 0
-      }
-      currentRef.current = null
-    },
-    [cancelRaf],
-  )
-
-  const tick = useCallback(
-    (idx: number) => {
-      const start = simStartRef.current[idx]
-      if (start === null) return
-      const elapsed = (performance.now() - start) / 1000
-      const dur = SAMPLES[idx].dur
-      if (elapsed >= dur) {
-        setStates((s) =>
-          s.map((c, i) => (i === idx ? { playing: false, elapsed: dur, progress: 1 } : c)),
-        )
-        simAtRef.current[idx] = 0
-        currentRef.current = null
-        rafRef.current = null
-        return
-      }
-      setStates((s) =>
-        s.map((c, i) => (i === idx ? { ...c, elapsed, progress: elapsed / dur } : c)),
+  // Drive progress from the real audio element's clock for smooth updates
+  // (the native `timeupdate` event only fires ~4x/sec, which looks choppy).
+  const tick = useCallback(() => {
+    const idx = currentRef.current
+    if (idx === null) return
+    const a = audioRefs.current[idx]
+    if (!a) return
+    const dur = a.duration || SAMPLES[idx].dur
+    const elapsed = a.currentTime
+    setStates((s) =>
+      s.map((c, i) =>
+        i === idx ? { ...c, elapsed, progress: dur ? elapsed / dur : 0 } : c
       )
-      rafRef.current = requestAnimationFrame(() => tickRef.current(idx))
-    },
-    [],
-  )
+    )
+    rafRef.current = requestAnimationFrame(() => tickRef.current())
+  }, [])
 
   // Route the recursive RAF call through a ref so `tick` doesn't reference itself.
   useEffect(() => {
@@ -120,38 +129,66 @@ export function VoiceSection() {
 
   const play = useCallback(
     (idx: number) => {
-      stopCurrent(true)
+      // Only one plays at a time — pause any other and reset its UI state.
+      const prev = currentRef.current
+      if (prev !== null && prev !== idx) {
+        audioRefs.current[prev]?.pause()
+      }
+      cancelRaf()
+      const a = audioRefs.current[idx]
+      if (!a) return
+      if (a.ended) a.currentTime = 0
       currentRef.current = idx
-      simStartRef.current[idx] = performance.now() - simAtRef.current[idx] * 1000
-      setStates((s) => s.map((c, i) => (i === idx ? { ...c, playing: true } : c)))
-      rafRef.current = requestAnimationFrame(() => tick(idx))
+      void a.play().catch(() => {})
+      setStates((s) => s.map((c, i) => ({ ...c, playing: i === idx })))
+      rafRef.current = requestAnimationFrame(() => tickRef.current())
     },
-    [stopCurrent, tick],
+    [cancelRaf]
   )
 
   const pause = useCallback(
-    (idx: number, currentElapsed: number) => {
+    (idx: number) => {
+      audioRefs.current[idx]?.pause()
       cancelRaf()
-      simAtRef.current[idx] = currentElapsed
       currentRef.current = null
-      setStates((s) => s.map((c, i) => (i === idx ? { ...c, playing: false } : c)))
+      setStates((s) =>
+        s.map((c, i) => (i === idx ? { ...c, playing: false } : c))
+      )
     },
-    [cancelRaf],
+    [cancelRaf]
   )
 
-  const seek = useCallback(
-    (idx: number, p: number, isPlaying: boolean) => {
-      const dur = SAMPLES[idx].dur
-      const newElapsed = p * dur
-      simAtRef.current[idx] = newElapsed
+  const seek = useCallback((idx: number, p: number) => {
+    const a = audioRefs.current[idx]
+    if (!a) return
+    const dur = a.duration || SAMPLES[idx].dur
+    a.currentTime = p * dur
+    setStates((s) =>
+      s.map((c, i) => (i === idx ? { ...c, elapsed: p * dur, progress: p } : c))
+    )
+  }, [])
+
+  const onLoadedMetadata = useCallback((idx: number) => {
+    const a = audioRefs.current[idx]
+    if (!a || !isFinite(a.duration)) return
+    setStates((s) =>
+      s.map((c, i) => (i === idx ? { ...c, dur: a.duration } : c))
+    )
+  }, [])
+
+  const onEnded = useCallback(
+    (idx: number) => {
+      cancelRaf()
+      currentRef.current = null
+      const a = audioRefs.current[idx]
+      if (a) a.currentTime = 0
       setStates((s) =>
-        s.map((c, i) => (i === idx ? { ...c, elapsed: newElapsed, progress: p } : c)),
+        s.map((c, i) =>
+          i === idx ? { ...c, playing: false, elapsed: 0, progress: 0 } : c
+        )
       )
-      if (isPlaying) {
-        simStartRef.current[idx] = performance.now() - newElapsed * 1000
-      }
     },
-    [],
+    [cancelRaf]
   )
 
   useEffect(() => () => cancelRaf(), [cancelRaf])
@@ -167,7 +204,8 @@ export function VoiceSection() {
             <em>like this.</em>
           </h2>
           <p className="section-sub">
-            Tap play. This is the kind of thing you&apos;ll hear when the music stops and the day is done.
+            Tap play. This is the kind of thing you&apos;ll hear when the music
+            stops and the day is done.
           </p>
         </div>
         <div className="voices">
@@ -177,6 +215,15 @@ export function VoiceSection() {
             const nOn = Math.round(state.progress * bars.length)
             return (
               <div key={idx} className="voice-card">
+                <audio
+                  ref={(el) => {
+                    audioRefs.current[idx] = el
+                  }}
+                  src={s.src}
+                  preload="metadata"
+                  onLoadedMetadata={() => onLoadedMetadata(idx)}
+                  onEnded={() => onEnded(idx)}
+                />
                 <div className="voice-header">
                   <div
                     className="voice-av"
@@ -191,11 +238,9 @@ export function VoiceSection() {
                 </div>
                 <div className="voice-row">
                   <button
-                    className={`play-btn${state.playing ? " playing" : ""}`}
+                    className={`play-btn${state.playing ? "playing" : ""}`}
                     aria-label={`${state.playing ? "Pause" : "Play"} message from ${s.name}`}
-                    onClick={() =>
-                      state.playing ? pause(idx, state.elapsed) : play(idx)
-                    }
+                    onClick={() => (state.playing ? pause(idx) : play(idx))}
                   >
                     {state.playing ? <IconPause /> : <IconPlay />}
                   </button>
@@ -210,8 +255,7 @@ export function VoiceSection() {
                       const r = e.currentTarget.getBoundingClientRect()
                       seek(
                         idx,
-                        Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)),
-                        state.playing,
+                        Math.max(0, Math.min(1, (e.clientX - r.left) / r.width))
                       )
                     }}
                   >
@@ -219,14 +263,16 @@ export function VoiceSection() {
                       <span
                         key={bi}
                         className={bi < nOn ? "on" : undefined}
-                        style={{ height: Math.max(2, Math.round(h * 38)) + "px" }}
+                        style={{
+                          height: Math.max(2, Math.round(h * 38)) + "px",
+                        }}
                       />
                     ))}
                   </div>
                   <span className="voice-dur">
                     {state.playing || state.progress > 0
                       ? fmt(state.elapsed)
-                      : fmt(s.dur)}
+                      : fmt(state.dur)}
                   </span>
                 </div>
               </div>

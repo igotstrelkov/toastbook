@@ -43,7 +43,7 @@ const faqItems = [
   },
   {
     q: "Can I download and keep the recordings?",
-    a: "Yes. With the one-time $49 unlock you can download every message individually or grab the whole collection as a zip, they're yours to keep, forever.",
+    a: "Yes. With the one-time €49 unlock you can download every message individually or grab the whole collection as a zip, they're yours to keep, forever.",
   },
   {
     q: "Why voices instead of photos?",
@@ -109,7 +109,7 @@ export default function Page() {
               <div className="hero-note reveal">
                 <span>Free to start</span>
                 <span className="dot" />
-                <span>$49 to keep everything</span>
+                <span>€49 to keep everything</span>
                 <span className="dot" />
                 <span>No app for guests</span>
               </div>
@@ -329,7 +329,7 @@ export default function Page() {
                   className="h-12 w-full rounded-full text-sm"
                   asChild
                 >
-                  <a href="#">Unlock for $49</a>
+                  <a href="#">Unlock for €49</a>
                 </Button>
               </div>
             </div>
