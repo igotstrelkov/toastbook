@@ -242,7 +242,7 @@ export default function Page() {
         <VoiceSection />
 
         {/* ── Testimonials ── */}
-        <section className="section">
+        {/* <section className="section">
           <div className="wrap">
             <div className="section-head center reveal">
               <div className="eyebrow">Loved by couples</div>
@@ -265,7 +265,7 @@ export default function Page() {
               ))}
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* ── Pricing ── */}
         <section className="section alt" id="pricing">
@@ -324,13 +324,19 @@ export default function Page() {
                     <Tick /> Share a read-only gallery
                   </li>
                 </ul>
-                <Button
+                {/* <Button
                   variant="accent"
                   className="h-12 w-full rounded-full text-sm"
                   asChild
                 >
                   <a href="#">Unlock for €49</a>
-                </Button>
+                </Button> */}
+                <CreateGuestbookButton
+                  variant="accent"
+                  className="h-12 w-full rounded-full text-sm"
+                >
+                  Unlock for €49
+                </CreateGuestbookButton>
               </div>
             </div>
           </div>
@@ -411,7 +417,7 @@ export default function Page() {
           </div>
           <div className="footer-base">
             <span>© 2026 Toastbook. A voice guestbook for weddings.</span>
-            <span>hello@Toastbook.gift</span>
+            <span>hello@toastbook.co</span>
           </div>
         </div>
       </footer>
