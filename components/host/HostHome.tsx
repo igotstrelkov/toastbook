@@ -1,25 +1,18 @@
 "use client"
 
-import { useConvexAuth, useMutation, useQuery } from "convex/react"
+import { useQuery } from "convex/react"
 import Link from "next/link"
-import { useEffect } from "react"
 
 import { api } from "@/convex/_generated/api"
 import { Eyebrow, IconWave } from "@/components/recorder/primitives"
+import { useStoreUser } from "@/hooks/use-store-user"
 
 // Host home — the post-sign-in landing. Lists the host's guestbooks (event
 // creation lands in Stage 5; until then this is empty unless you've claimed
 // the seeded test event).
 export function HostHome() {
-  // Provision the user row, but only once Convex actually has the auth token
-  // (calling earlier throws "Not signed in"); re-run when auth becomes ready.
-  const { isAuthenticated } = useConvexAuth()
-  const ensureUser = useMutation(api.users.ensureUser)
-  useEffect(() => {
-    if (isAuthenticated) void ensureUser({}).catch(() => {})
-  }, [isAuthenticated, ensureUser])
-
-  const events = useQuery(api.events.listMine, {})
+  const { ready } = useStoreUser()
+  const events = useQuery(api.events.listMine, ready ? {} : "skip")
 
   return (
     <main
@@ -44,7 +37,7 @@ export function HostHome() {
           Welcome back.
         </h1>
 
-        {events === undefined ? (
+        {!ready || events === undefined ? (
           <p style={{ color: "var(--aloud-ink-faint)" }}>Loading…</p>
         ) : events.length === 0 ? (
           <div

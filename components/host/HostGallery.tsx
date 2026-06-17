@@ -1,15 +1,11 @@
 "use client"
 
-import {
-  useAction,
-  useConvexAuth,
-  useMutation,
-  useQuery,
-} from "convex/react"
-import { type ReactNode, useEffect, useRef, useState } from "react"
+import { useAction, useMutation, useQuery } from "convex/react"
+import { type ReactNode, useRef, useState } from "react"
 
 import { api } from "@/convex/_generated/api"
 import type { Id } from "@/convex/_generated/dataModel"
+import { useStoreUser } from "@/hooks/use-store-user"
 import {
   Avatar,
   Eyebrow,
@@ -74,20 +70,16 @@ function CoupleNames({ value }: { value: string }) {
 }
 
 export function HostGallery({ eventId }: { eventId: Id<"events"> }) {
-  // Provision the user row once Convex has the auth token (calling before
-  // auth is ready throws "Not signed in"); re-run when auth becomes ready.
-  const { isAuthenticated } = useConvexAuth()
-  const ensureUser = useMutation(api.users.ensureUser)
-  useEffect(() => {
-    if (isAuthenticated) void ensureUser({}).catch(() => {})
-  }, [isAuthenticated, ensureUser])
+  // Gate queries on auth + provisioned user row (see useStoreUser) so the
+  // gallery renders Loading → final state with no claim/empty flash.
+  const { ready } = useStoreUser()
+  const event = useQuery(api.events.getById, ready ? { eventId } : "skip")
+  const recordings = useQuery(
+    api.recordings.listByEvent,
+    ready ? { eventId } : "skip",
+  ) as Recording[] | undefined
 
-  const event = useQuery(api.events.getById, { eventId })
-  const recordings = useQuery(api.recordings.listByEvent, { eventId }) as
-    | Recording[]
-    | undefined
-
-  if (event === undefined || recordings === undefined) {
+  if (!ready || event === undefined || recordings === undefined) {
     return <Centered>Loading…</Centered>
   }
   if (event === null) {
