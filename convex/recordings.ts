@@ -155,6 +155,42 @@ export const listByEvent = query({
   },
 })
 
+// ── delete helpers (R2 object deletion lives in the node action r2.ts) ──
+export const getRecording = internalQuery({
+  args: { recordingId: v.id("recordings") },
+  handler: (ctx, { recordingId }) => ctx.db.get(recordingId),
+})
+
+export const removeRecording = internalMutation({
+  args: { recordingId: v.id("recordings") },
+  handler: async (ctx, { recordingId }) => {
+    await ctx.db.delete(recordingId)
+  },
+})
+
+export const recordingsForEvent = internalQuery({
+  args: { eventId: v.id("events") },
+  handler: (ctx, { eventId }) =>
+    ctx.db
+      .query("recordings")
+      .withIndex("by_event", (q) => q.eq("eventId", eventId))
+      .collect(),
+})
+
+// Cascade-deletes an event's recording rows + the event row (R2 objects are
+// purged first by the r2.deleteEvent action — hard rule 7).
+export const removeEvent = internalMutation({
+  args: { eventId: v.id("events") },
+  handler: async (ctx, { eventId }) => {
+    const recs = await ctx.db
+      .query("recordings")
+      .withIndex("by_event", (q) => q.eq("eventId", eventId))
+      .collect()
+    for (const r of recs) await ctx.db.delete(r._id)
+    await ctx.db.delete(eventId)
+  },
+})
+
 // Rows stuck in `processing` past the grace window — the reconciler's worklist.
 export const staleProcessing = internalQuery({
   args: {},

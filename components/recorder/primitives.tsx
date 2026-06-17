@@ -92,6 +92,16 @@ export const IconArrow = (p: IconProps) => (
     <path d="M5 12h14m0 0l-6-6m6 6l-6 6" />
   </Ic>
 )
+export const IconTrash = (p: IconProps) => (
+  <Ic {...p}>
+    <path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13M10 11v6M14 11v6" />
+  </Ic>
+)
+export const IconX = (p: IconProps) => (
+  <Ic {...p}>
+    <path d="M6 6l12 12M18 6L6 18" />
+  </Ic>
+)
 export const IconWave = ({ size = 20, style }: IconProps) => (
   <svg
     width={size}
@@ -250,6 +260,48 @@ export function LevelMeter({
           }}
         />
       ))}
+    </div>
+  )
+}
+
+/* ---------- avatar (initials, hue from name) ---------- */
+function hueFromName(name: string): number {
+  let h = 2166136261
+  for (let i = 0; i < name.length; i++) {
+    h ^= name.charCodeAt(i)
+    h = Math.imul(h, 16777619)
+  }
+  return (h >>> 0) % 360
+}
+
+export function Avatar({ name = "", size = 42 }: { name?: string; size?: number }) {
+  const initials =
+    name
+      .trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((w) => w[0])
+      .join("")
+      .toUpperCase() || "♥"
+  return (
+    <div
+      style={{
+        width: size,
+        height: size,
+        borderRadius: "50%",
+        flexShrink: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: "var(--font-newsreader, Georgia, serif)",
+        fontSize: size * 0.42,
+        fontWeight: 500,
+        color: "var(--aloud-ink)",
+        background: `oklch(0.9 0.045 ${hueFromName(name)})`,
+        boxShadow: "inset 0 0 0 1.2px rgba(0,0,0,0.06)",
+      }}
+    >
+      {initials}
     </div>
   )
 }

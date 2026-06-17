@@ -13,6 +13,7 @@ import type * as events from "../events.js";
 import type * as guest from "../guest.js";
 import type * as health from "../health.js";
 import type * as http from "../http.js";
+import type * as r2 from "../r2.js";
 import type * as recordings from "../recordings.js";
 import type * as seed from "../seed.js";
 import type * as transloadit from "../transloadit.js";
@@ -29,6 +30,7 @@ declare const fullApi: ApiFromModules<{
   guest: typeof guest;
   health: typeof health;
   http: typeof http;
+  r2: typeof r2;
   recordings: typeof recordings;
   seed: typeof seed;
   transloadit: typeof transloadit;
