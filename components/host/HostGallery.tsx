@@ -1,6 +1,7 @@
 "use client"
 
 import { useAction, useMutation, useQuery } from "convex/react"
+import Link from "next/link"
 import { type ReactNode, useRef, useState } from "react"
 
 import { api } from "@/convex/_generated/api"
@@ -159,9 +160,27 @@ export function HostGallery({ eventId }: { eventId: Id<"events"> }) {
               </span>
             </div>
           </div>
-          <div style={{ display: "flex", gap: 26, textAlign: "right" }}>
-            <Stat n={String(total)} label="Messages" />
-            <Stat n={fmtTime(totalSecs)} label="Recorded" mono />
+          <div style={{ display: "flex", alignItems: "center", gap: 26 }}>
+            <div style={{ display: "flex", gap: 26, textAlign: "right" }}>
+              <Stat n={String(total)} label="Messages" />
+              <Stat n={fmtTime(totalSecs)} label="Recorded" mono />
+            </div>
+            <Link
+              href={`/dashboard/${eventId}/share`}
+              style={{
+                textDecoration: "none",
+                border: "1.4px solid var(--aloud-line)",
+                borderRadius: 999,
+                padding: "10px 16px",
+                fontFamily: "var(--font-hanken, system-ui)",
+                fontWeight: 600,
+                fontSize: 13.5,
+                color: "var(--aloud-ink)",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Share
+            </Link>
           </div>
         </div>
 

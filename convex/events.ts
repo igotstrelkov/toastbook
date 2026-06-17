@@ -53,6 +53,44 @@ export const getById = query({
   },
 })
 
+function slugify(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 28)
+}
+
+// Create an event owned by the signed-in host, with an unguessable slug
+// (readable prefix + random suffix — the slug is the guest capability token).
+export const createEvent = mutation({
+  args: {
+    partnerA: v.string(),
+    partnerB: v.string(),
+    eventDate: v.string(), // ISO date (yyyy-mm-dd)
+  },
+  handler: async (ctx, { partnerA, partnerB, eventDate }) => {
+    const user = await requireUser(ctx)
+    const a = partnerA.trim()
+    const b = partnerB.trim()
+    const coupleNames = a && b ? `${a} & ${b}` : a || b || "Our wedding"
+    const prefix = slugify(`${a} ${b}`) || "guestbook"
+    const rand = crypto.randomUUID().replace(/-/g, "").slice(0, 8)
+    const slug = `${prefix}-${rand}`
+
+    const eventId = await ctx.db.insert("events", {
+      userId: user._id,
+      title: coupleNames,
+      coupleNames,
+      eventDate: eventDate.trim() || new Date().toISOString().slice(0, 10),
+      slug,
+      status: "active",
+      isPaid: false,
+    })
+    return { eventId, slug }
+  },
+})
+
 // The signed-in host's own events (host home / dashboard index).
 export const listMine = query({
   args: {},

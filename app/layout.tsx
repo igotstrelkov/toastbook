@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Hanken_Grotesk, Inter, Newsreader, Space_Mono } from "next/font/google"
+import Script from "next/script"
 import { ClerkProvider } from "@clerk/nextjs"
 
 import { ConvexClientProvider } from "@/components/ConvexClientProvider"
@@ -72,6 +73,19 @@ export default function RootLayout({
       )}
     >
       <body>
+        {/* Google tag (gtag.js) — Google Ads conversion tracking, site-wide */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=AW-18247886696"
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-18247886696');
+          `}
+        </Script>
         <ThemeProvider>
           <WaitlistProvider clerkEnabled={clerkEnabled}>
             {/* Convex is wired to Clerk when configured; guests stay anonymous

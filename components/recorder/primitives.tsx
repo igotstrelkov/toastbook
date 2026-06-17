@@ -92,6 +92,17 @@ export const IconArrow = (p: IconProps) => (
     <path d="M5 12h14m0 0l-6-6m6 6l-6 6" />
   </Ic>
 )
+export const IconCopy = (p: IconProps) => (
+  <Ic {...p}>
+    <rect x="8.5" y="8.5" width="11" height="11" rx="2.5" />
+    <path d="M5.5 15.5h-1a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+  </Ic>
+)
+export const IconDownload = (p: IconProps) => (
+  <Ic {...p}>
+    <path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 20h16" />
+  </Ic>
+)
 export const IconTrash = (p: IconProps) => (
   <Ic {...p}>
     <path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13M10 11v6M14 11v6" />

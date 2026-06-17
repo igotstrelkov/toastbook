@@ -6,6 +6,20 @@ import Link from "next/link"
 import { api } from "@/convex/_generated/api"
 import { Eyebrow, IconWave } from "@/components/recorder/primitives"
 import { useStoreUser } from "@/hooks/use-store-user"
+import type { CSSProperties } from "react"
+
+const createBtn: CSSProperties = {
+  textDecoration: "none",
+  border: "none",
+  borderRadius: 999,
+  padding: "12px 20px",
+  fontFamily: "var(--font-hanken, system-ui)",
+  fontWeight: 600,
+  fontSize: 14,
+  background: "var(--aloud-accent)",
+  color: "var(--aloud-accent-ink)",
+  display: "inline-block",
+}
 
 // Host home — the post-sign-in landing. Lists the host's guestbooks (event
 // creation lands in Stage 5; until then this is empty unless you've claimed
@@ -24,18 +38,34 @@ export function HostHome() {
       }}
     >
       <div style={{ maxWidth: 720, margin: "0 auto", padding: "48px 28px 70px" }}>
-        <Eyebrow>Your guestbooks</Eyebrow>
-        <h1
+        <div
           style={{
-            fontFamily: "var(--font-newsreader, Georgia, serif)",
-            fontWeight: 400,
-            fontSize: 38,
-            letterSpacing: "-0.018em",
-            margin: "8px 0 28px",
+            display: "flex",
+            alignItems: "flex-end",
+            justifyContent: "space-between",
+            gap: 16,
+            flexWrap: "wrap",
+            marginBottom: 28,
           }}
         >
-          Welcome back.
-        </h1>
+          <div>
+            <Eyebrow>Your guestbooks</Eyebrow>
+            <h1
+              style={{
+                fontFamily: "var(--font-newsreader, Georgia, serif)",
+                fontWeight: 400,
+                fontSize: 38,
+                letterSpacing: "-0.018em",
+                margin: "8px 0 0",
+              }}
+            >
+              Welcome back.
+            </h1>
+          </div>
+          <Link href="/dashboard/new" style={createBtn}>
+            + Create a guestbook
+          </Link>
+        </div>
 
         {!ready || events === undefined ? (
           <p style={{ color: "var(--aloud-ink-faint)" }}>Loading…</p>
@@ -50,9 +80,12 @@ export function HostHome() {
             }}
           >
             <IconWave size={22} style={{ color: "var(--aloud-accent)" }} />
-            <p style={{ marginTop: 10, fontSize: 14 }}>
-              No guestbooks yet. Creating one is coming soon.
+            <p style={{ marginTop: 10, marginBottom: 16, fontSize: 14 }}>
+              No guestbooks yet.
             </p>
+            <Link href="/dashboard/new" style={createBtn}>
+              + Create a guestbook
+            </Link>
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
