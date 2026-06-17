@@ -8,9 +8,13 @@
  * @module
  */
 
+import type * as crons from "../crons.js";
+import type * as events from "../events.js";
 import type * as guest from "../guest.js";
 import type * as health from "../health.js";
 import type * as http from "../http.js";
+import type * as recordings from "../recordings.js";
+import type * as seed from "../seed.js";
 import type * as transloadit from "../transloadit.js";
 
 import type {
@@ -20,9 +24,13 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  crons: typeof crons;
+  events: typeof events;
   guest: typeof guest;
   health: typeof health;
   http: typeof http;
+  recordings: typeof recordings;
+  seed: typeof seed;
   transloadit: typeof transloadit;
 }>;
 

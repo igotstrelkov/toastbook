@@ -44,17 +44,24 @@ const GUEST_AUDIO_STEPS = {
 type AssemblyOptions = { params: string; signature: string; fields?: unknown }
 
 export const getGuestAssemblyOptions = action({
-  args: { guestName: v.optional(v.string()) },
+  args: { slug: v.string(), guestName: v.optional(v.string()) },
   handler: async (
     ctx,
     args,
   ): Promise<{ assemblyOptions: AssemblyOptions }> => {
+    // Validate slug → active event (hard rule 2); use the real eventId so the
+    // webhook can attribute the recording.
+    const event = await ctx.runQuery(api.events.getEventBySlug, {
+      slug: args.slug,
+    })
+    if (!event) throw new Error("This guestbook isn't available.")
+
     const notifyUrl = `${process.env.CONVEX_SITE_URL}/transloadit/webhook`
     const assemblyOptions = await ctx.runAction(
       api.transloadit.createAssemblyOptions,
       {
         steps: GUEST_AUDIO_STEPS,
-        fields: { eventId: "TEST_EVENT", guestName: args.guestName ?? "" },
+        fields: { eventId: event._id, guestName: args.guestName ?? "" },
         notifyUrl,
       },
     )

@@ -2,7 +2,7 @@
 
 import Uppy from "@uppy/core"
 import Transloadit, { type AssemblyOptions } from "@uppy/transloadit"
-import { useAction } from "convex/react"
+import { useAction, useMutation, useQuery } from "convex/react"
 import {
   type CSSProperties,
   type ReactNode,
@@ -32,12 +32,46 @@ import {
 
 const CAP = 60 // seconds
 
-// Placeholder event — replaced by the getEventBySlug query in Stage 2.
-const PLACEHOLDER_EVENT = {
-  a: "Maya",
-  b: "Theo",
-  date: "SEPTEMBER 14, 2026",
-  greetDur: 12,
+type RecorderEvent = {
+  coupleNames: string
+  date: string
+  coverUrl: string | null
+  greetingUrl: string | null
+  greetDur: number
+}
+
+function formatDate(iso: string): string {
+  const d = new Date(iso)
+  if (isNaN(d.getTime())) return iso
+  return d
+    .toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+      timeZone: "UTC",
+    })
+    .toUpperCase()
+}
+
+// Render "Maya & Theo" with the ampersand in the clay accent serif.
+function Names({ value }: { value: string }) {
+  const parts = value.split(/\s*&\s*/)
+  if (parts.length !== 2) return <>{value}</>
+  return (
+    <>
+      {parts[0]}{" "}
+      <span
+        style={{
+          fontStyle: "italic",
+          fontFamily: "var(--font-newsreader, Georgia, serif)",
+          color: "var(--aloud-accent)",
+        }}
+      >
+        &amp;
+      </span>{" "}
+      {parts[1]}
+    </>
+  )
 }
 
 type Screen =
@@ -64,8 +98,9 @@ function extFromMime(mime: string): string {
 }
 
 export function Recorder({ slug }: { slug: string }) {
-  const event = PLACEHOLDER_EVENT
+  const eventData = useQuery(api.events.getEventBySlug, { slug })
   const getAssemblyOptions = useAction(api.guest.getGuestAssemblyOptions)
+  const registerRecording = useMutation(api.recordings.registerRecording)
 
   const [screen, setScreen] = useState<Screen>("cover")
   const [elapsed, setElapsed] = useState(0)
@@ -171,6 +206,7 @@ export function Recorder({ slug }: { slug: string }) {
       waitForEncoding: false,
       assemblyOptions: async () => {
         const { assemblyOptions } = await getAssemblyOptions({
+          slug,
           guestName: guestName.trim() || undefined,
         })
         return assemblyOptions as unknown as AssemblyOptions
@@ -180,6 +216,18 @@ export function Recorder({ slug }: { slug: string }) {
       if (cancelled) return
       setUploadPct(n)
       setUploadStatus(n < 100 ? "Uploading…" : "Confirming…")
+    })
+    // Optimistic insert so the host sees a "processing" row instantly. NOT
+    // authoritative (hard rule 8) — the webhook/reconciler creates it anyway.
+    uppy.on("transloadit:assembly-created", (assembly) => {
+      const assemblyId = (assembly as { assembly_id?: string }).assembly_id
+      if (!assemblyId) return
+      void registerRecording({
+        slug,
+        assemblyId,
+        guestName: guestName.trim() || undefined,
+        durationSeconds: Math.round(duration),
+      }).catch(() => {})
     })
     ;(async () => {
       try {
@@ -214,6 +262,16 @@ export function Recorder({ slug }: { slug: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const event: RecorderEvent | null = eventData
+    ? {
+        coupleNames: eventData.coupleNames ?? eventData.title,
+        date: formatDate(eventData.eventDate),
+        coverUrl: eventData.coverUrl,
+        greetingUrl: eventData.greetingUrl,
+        greetDur: 12,
+      }
+    : null
+
   return (
     <div
       className="aloud"
@@ -235,17 +293,19 @@ export function Recorder({ slug }: { slug: string }) {
           boxSizing: "border-box",
         }}
       >
-        {screen === "cover" && (
+        {eventData === undefined && <GLoading />}
+        {eventData === null && <GUnavailable />}
+        {event && screen === "cover" && (
           <GCover event={event} onRecord={() => setScreen("permission")} />
         )}
-        {screen === "permission" && (
+        {event && screen === "permission" && (
           <GPermission
             error={error}
             onAllow={startRecording}
             onBack={() => setScreen("cover")}
           />
         )}
-        {screen === "recording" && (
+        {event && screen === "recording" && (
           <GRecording
             elapsed={elapsed}
             onStop={() => stopRecording()}
@@ -255,7 +315,7 @@ export function Recorder({ slug }: { slug: string }) {
             }}
           />
         )}
-        {screen === "preview" && (
+        {event && screen === "preview" && (
           <GPreview
             url={previewUrl}
             duration={duration}
@@ -264,7 +324,7 @@ export function Recorder({ slug }: { slug: string }) {
             onKeep={() => setScreen("name")}
           />
         )}
-        {screen === "name" && (
+        {event && screen === "name" && (
           <GName
             event={event}
             value={guestName}
@@ -272,16 +332,62 @@ export function Recorder({ slug }: { slug: string }) {
             onSubmit={() => setScreen("uploading")}
           />
         )}
-        {screen === "uploading" && (
+        {event && screen === "uploading" && (
           <GUploading pct={uploadPct} status={uploadStatus} />
         )}
-        {screen === "done" && <GDone event={event} onAgain={reset} />}
+        {event && screen === "done" && <GDone event={event} onAgain={reset} />}
       </div>
     </div>
   )
 }
 
-type Event = typeof PLACEHOLDER_EVENT
+type Event = RecorderEvent
+
+/* loading + unavailable states */
+function GLoading() {
+  return (
+    <GScreen center>
+      <div style={{ textAlign: "center", color: "var(--aloud-ink-faint)" }}>
+        <IconWave size={22} style={{ color: "var(--aloud-accent)" }} />
+        <p style={{ marginTop: 12, fontSize: 14 }}>Loading…</p>
+      </div>
+    </GScreen>
+  )
+}
+
+function GUnavailable() {
+  return (
+    <GScreen center>
+      <div style={{ textAlign: "center" }}>
+        <Eyebrow>Not available</Eyebrow>
+        <h2
+          style={{
+            fontFamily: "var(--font-newsreader, Georgia, serif)",
+            fontWeight: 400,
+            fontSize: 30,
+            margin: "12px 0 12px",
+          }}
+        >
+          This guestbook
+          <br />
+          isn&apos;t available.
+        </h2>
+        <p
+          style={{
+            fontSize: 15,
+            lineHeight: 1.55,
+            color: "var(--aloud-ink-soft)",
+            maxWidth: 290,
+            margin: "0 auto",
+          }}
+        >
+          The link may be incorrect, or the couple hasn&apos;t opened their
+          guestbook yet. Double-check the link or QR code.
+        </p>
+      </div>
+    </GScreen>
+  )
+}
 
 /* shared screen shell */
 function GScreen({
@@ -358,21 +464,37 @@ function GCover({ event, onRecord }: { event: Event; onRecord: () => void }) {
           justifyContent: "center",
         }}
       >
-        <span
-          className="mono"
-          style={{
-            fontFamily: "var(--font-space-mono, monospace)",
-            fontSize: 10.5,
-            letterSpacing: "0.04em",
-            textTransform: "uppercase",
-            color: "var(--aloud-ink-faint)",
-            background: "color-mix(in oklab, var(--aloud-paper), transparent 14%)",
-            padding: "5px 9px",
-            borderRadius: 6,
-          }}
-        >
-          cover photo
-        </span>
+        {event.coverUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={event.coverUrl}
+            alt=""
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+            }}
+          />
+        ) : (
+          <span
+            className="mono"
+            style={{
+              fontFamily: "var(--font-space-mono, monospace)",
+              fontSize: 10.5,
+              letterSpacing: "0.04em",
+              textTransform: "uppercase",
+              color: "var(--aloud-ink-faint)",
+              background:
+                "color-mix(in oklab, var(--aloud-paper), transparent 14%)",
+              padding: "5px 9px",
+              borderRadius: 6,
+            }}
+          >
+            cover photo
+          </span>
+        )}
         <div
           style={{
             position: "absolute",
@@ -415,17 +537,7 @@ function GCover({ event, onRecord }: { event: Event; onRecord: () => void }) {
             margin: "0 0 10px",
           }}
         >
-          {event.a}{" "}
-          <span
-            style={{
-              fontStyle: "italic",
-              fontFamily: "var(--font-newsreader, Georgia, serif)",
-              color: "var(--aloud-accent)",
-            }}
-          >
-            &amp;
-          </span>{" "}
-          {event.b}
+          <Names value={event.coupleNames} />
         </h1>
         <div
           style={{
@@ -929,11 +1041,11 @@ function GName({
           lineHeight: 1.5,
         }}
       >
-        So {event.a} &amp; {event.b} know who to thank. You can leave this blank.
+        So {event.coupleNames} knows who to thank. You can leave this blank.
       </p>
       <div style={{ flex: 1 }} />
       <Btn variant="accent" size="lg" block onClick={onSubmit}>
-        Send to {event.a} &amp; {event.b} <IconArrow size={18} />
+        Send to {event.coupleNames} <IconArrow size={18} />
       </Btn>
       <Btn variant="quiet" block onClick={onSubmit} style={{ marginTop: 6 }}>
         Skip — send anonymously
@@ -1052,7 +1164,7 @@ function GDone({ event, onAgain }: { event: Event; onAgain: () => void }) {
               color: "var(--aloud-ink)",
             }}
           >
-            {event.a} &amp; {event.b}&apos;s
+            {event.coupleNames}&apos;s
           </span>{" "}
           guestbook — one of the moments they&apos;ll keep forever.
         </p>
