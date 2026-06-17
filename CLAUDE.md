@@ -54,7 +54,7 @@ Browser records via `MediaRecorder` → Uppy + tus uploads **directly to Translo
 ## Verify — do NOT trust training data
 
 - **`@transloadit/convex` is pre-1.0.** Confirm against the current README: exports (`makeTransloaditAPI` → `createAssemblyOptions`, `queueWebhook`, `listResults`; `handleWebhookRequest`), the `createAssemblyOptions({ steps, fields })` shape, and the `listResults` row shape (where the stored object key lives). Adjust if the API differs.
-- **Transloadit robots evolve.** Verify `/audio/encode` loudnorm syntax (`ffmpeg.af`), the `ffmpeg_stack` version, `/s3/store` config for an R2 endpoint via a stored credential, and `path` variable syntax (`${fields.*}`, `${assembly.id}`).
+- **Transloadit robots evolve.** Verified in build: store to R2 with **`/cloudflare/store`** (R2-native) + a **Cloudflare** Template Credential named `toastbook` — NOT `/s3/store`, which forces an AWS region R2 rejects. `/audio/encode` `ffmpeg.af` loudnorm + `ffmpeg_stack: v6.0.0` and `path` vars (`${fields.*}`, `${assembly.id}`, `${file.ext}`) confirmed working. Note `/cloudflare/store` prepends the bucket name to the key.
 - **Other SDKs:** use `clerkMiddleware` (not the deprecated `authMiddleware`); Stripe signature verification needs the **raw request body** (`await request.text()`), not parsed JSON. Confirm current Clerk/Convex/Stripe APIs.
 - **Always build the cron reconciler** that finalizes/fails `processing` rows older than ~30s via `listResults`/`getAssemblyStatus`, as a safety net regardless of the webhook hook.
 
