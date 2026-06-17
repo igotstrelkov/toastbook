@@ -1,0 +1,114 @@
+"use client"
+
+import { useConvexAuth, useMutation, useQuery } from "convex/react"
+import Link from "next/link"
+import { useEffect } from "react"
+
+import { api } from "@/convex/_generated/api"
+import { Eyebrow, IconWave } from "@/components/recorder/primitives"
+
+// Host home — the post-sign-in landing. Lists the host's guestbooks (event
+// creation lands in Stage 5; until then this is empty unless you've claimed
+// the seeded test event).
+export function HostHome() {
+  // Provision the user row, but only once Convex actually has the auth token
+  // (calling earlier throws "Not signed in"); re-run when auth becomes ready.
+  const { isAuthenticated } = useConvexAuth()
+  const ensureUser = useMutation(api.users.ensureUser)
+  useEffect(() => {
+    if (isAuthenticated) void ensureUser({}).catch(() => {})
+  }, [isAuthenticated, ensureUser])
+
+  const events = useQuery(api.events.listMine, {})
+
+  return (
+    <main
+      className="aloud"
+      style={{
+        minHeight: "100dvh",
+        background: "var(--aloud-paper)",
+        color: "var(--aloud-ink)",
+      }}
+    >
+      <div style={{ maxWidth: 720, margin: "0 auto", padding: "48px 28px 70px" }}>
+        <Eyebrow>Your guestbooks</Eyebrow>
+        <h1
+          style={{
+            fontFamily: "var(--font-newsreader, Georgia, serif)",
+            fontWeight: 400,
+            fontSize: 38,
+            letterSpacing: "-0.018em",
+            margin: "8px 0 28px",
+          }}
+        >
+          Welcome back.
+        </h1>
+
+        {events === undefined ? (
+          <p style={{ color: "var(--aloud-ink-faint)" }}>Loading…</p>
+        ) : events.length === 0 ? (
+          <div
+            style={{
+              border: "1.4px solid var(--aloud-line)",
+              borderRadius: 18,
+              padding: 40,
+              textAlign: "center",
+              color: "var(--aloud-ink-faint)",
+            }}
+          >
+            <IconWave size={22} style={{ color: "var(--aloud-accent)" }} />
+            <p style={{ marginTop: 10, fontSize: 14 }}>
+              No guestbooks yet. Creating one is coming soon.
+            </p>
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {events.map((e) => (
+              <Link
+                key={e._id}
+                href={`/dashboard/${e._id}`}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 16,
+                  padding: "18px 22px",
+                  border: "1.4px solid var(--aloud-line)",
+                  borderRadius: 18,
+                  textDecoration: "none",
+                  color: "var(--aloud-ink)",
+                  background: "var(--aloud-paper)",
+                }}
+              >
+                <span>
+                  <span
+                    style={{
+                      fontFamily: "var(--font-newsreader, Georgia, serif)",
+                      fontSize: 22,
+                    }}
+                  >
+                    {e.coupleNames ?? e.title}
+                  </span>
+                  <span
+                    style={{
+                      display: "block",
+                      fontFamily: "var(--font-space-mono, monospace)",
+                      fontSize: 12,
+                      color: "var(--aloud-ink-faint)",
+                      marginTop: 2,
+                    }}
+                  >
+                    {e.eventDate} · {e.status}
+                  </span>
+                </span>
+                <span style={{ color: "var(--aloud-ink-soft)", fontSize: 14 }}>
+                  Open →
+                </span>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    </main>
+  )
+}

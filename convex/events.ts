@@ -53,6 +53,28 @@ export const getById = query({
   },
 })
 
+// The signed-in host's own events (host home / dashboard index).
+export const listMine = query({
+  args: {},
+  handler: async (ctx) => {
+    const user = await getUser(ctx)
+    if (!user) return []
+    const events = await ctx.db
+      .query("events")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .order("desc")
+      .collect()
+    return events.map((e) => ({
+      _id: e._id,
+      title: e.title,
+      coupleNames: e.coupleNames ?? null,
+      eventDate: e.eventDate,
+      status: e.status,
+      isPaid: e.isPaid,
+    }))
+  },
+})
+
 // Ownership check for the current identity — used by the delete actions.
 export const ownsEvent = query({
   args: { eventId: v.id("events") },

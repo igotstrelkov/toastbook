@@ -404,13 +404,13 @@ export default function Page() {
                 <a href="#how">How it works</a>
                 <a href="#voices">Listen</a>
                 <a href="#pricing">Pricing</a>
-                <a href="#">Create a guestbook</a>
+                <a href="/sign-in">Create a guestbook</a>
               </div>
               <div className="footer-col">
-                <h4>Company</h4>
+                <h4>Hosts</h4>
+                <a href="/sign-in">Host login</a>
                 <a href="#">About</a>
                 <a href="#">Privacy</a>
-                <a href="#">Terms</a>
                 <a href="#">Contact</a>
               </div>
             </div>

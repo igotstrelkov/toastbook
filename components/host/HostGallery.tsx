@@ -1,6 +1,11 @@
 "use client"
 
-import { useAction, useMutation, useQuery } from "convex/react"
+import {
+  useAction,
+  useConvexAuth,
+  useMutation,
+  useQuery,
+} from "convex/react"
 import { type ReactNode, useEffect, useRef, useState } from "react"
 
 import { api } from "@/convex/_generated/api"
@@ -69,12 +74,13 @@ function CoupleNames({ value }: { value: string }) {
 }
 
 export function HostGallery({ eventId }: { eventId: Id<"events"> }) {
-  // Provision the user row on first authenticated visit so ownership checks
-  // resolve (lazy upsert by clerkId).
+  // Provision the user row once Convex has the auth token (calling before
+  // auth is ready throws "Not signed in"); re-run when auth becomes ready.
+  const { isAuthenticated } = useConvexAuth()
   const ensureUser = useMutation(api.users.ensureUser)
   useEffect(() => {
-    void ensureUser({}).catch(() => {})
-  }, [ensureUser])
+    if (isAuthenticated) void ensureUser({}).catch(() => {})
+  }, [isAuthenticated, ensureUser])
 
   const event = useQuery(api.events.getById, { eventId })
   const recordings = useQuery(api.recordings.listByEvent, { eventId }) as

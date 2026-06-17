@@ -88,7 +88,11 @@ export default function RootLayout({
   )
 
   return clerkEnabled ? (
-    <ClerkProvider signInUrl="/sign-in" signInFallbackRedirectUrl="/">
+    <ClerkProvider
+      signInUrl="/sign-in"
+      signInFallbackRedirectUrl="/dashboard"
+      signUpFallbackRedirectUrl="/dashboard"
+    >
       {tree}
     </ClerkProvider>
   ) : (
