@@ -17,6 +17,7 @@ import type * as r2 from "../r2.js";
 import type * as recordings from "../recordings.js";
 import type * as seed from "../seed.js";
 import type * as transloadit from "../transloadit.js";
+import type * as users from "../users.js";
 
 import type {
   ApiFromModules,
@@ -34,6 +35,7 @@ declare const fullApi: ApiFromModules<{
   recordings: typeof recordings;
   seed: typeof seed;
   transloadit: typeof transloadit;
+  users: typeof users;
 }>;
 
 /**

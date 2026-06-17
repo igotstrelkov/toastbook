@@ -1,6 +1,7 @@
 import { v } from "convex/values"
 
-import { internalQuery, query } from "./_generated/server"
+import { internalQuery, mutation, query } from "./_generated/server"
+import { getUser, requireUser } from "./users"
 
 // Public, guest-callable. Returns ONLY display fields for an ACTIVE event, and
 // nothing for a missing/non-active slug (no data leak — hard rule 2). URLs are
@@ -28,13 +29,15 @@ export const getEventBySlug = query({
   },
 })
 
-// Host dashboard read (by id, any status). NOT auth-gated yet — Stage 4 adds
-// ownership checks; until then the eventId acts as the capability.
+// Host dashboard read (by id, any status). Auth-gated: only the owning host
+// (Stage 4). Returns null for signed-out / non-owner / missing.
 export const getById = query({
   args: { eventId: v.id("events") },
   handler: async (ctx, { eventId }) => {
+    const user = await getUser(ctx)
+    if (!user) return null
     const event = await ctx.db.get(eventId)
-    if (!event) return null
+    if (!event || event.userId !== user._id) return null
     const base = process.env.MEDIA_BASE_URL
     return {
       _id: event._id,
@@ -47,6 +50,34 @@ export const getById = query({
       coverUrl:
         event.coverKey && base ? `${base}/${event.coverKey}` : null,
     }
+  },
+})
+
+// Ownership check for the current identity — used by the delete actions.
+export const ownsEvent = query({
+  args: { eventId: v.id("events") },
+  handler: async (ctx, { eventId }) => {
+    const user = await getUser(ctx)
+    if (!user) return false
+    const event = await ctx.db.get(eventId)
+    return !!event && event.userId === user._id
+  },
+})
+
+// Claim an UNOWNED event as the current host. Real ownership is set at creation
+// in Stage 5; this safely lets a host adopt the seeded test event. Refuses to
+// take over an already-owned event.
+export const claimEvent = mutation({
+  args: { eventId: v.id("events") },
+  handler: async (ctx, { eventId }) => {
+    const user = await requireUser(ctx)
+    const event = await ctx.db.get(eventId)
+    if (!event) throw new Error("Event not found.")
+    if (event.userId && event.userId !== user._id) {
+      throw new Error("This event already belongs to someone else.")
+    }
+    await ctx.db.patch(eventId, { userId: user._id })
+    return user._id
   },
 })
 

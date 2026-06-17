@@ -9,6 +9,7 @@ import {
   mutation,
   query,
 } from "./_generated/server"
+import { getUser } from "./users"
 
 // The stored object key is the path portion of the result's R2 sslUrl, e.g.
 // https://toastbook.<acct>.r2.cloudflarestorage.com/toastbook/events/…/x.mp3
@@ -135,6 +136,13 @@ export const finalizeRecording = internalMutation({
 export const listByEvent = query({
   args: { eventId: v.id("events") },
   handler: async (ctx, { eventId }) => {
+    // Host-only: must be signed in and own the event (hard rule 2 keeps GUEST
+    // functions public; this is a HOST read).
+    const user = await getUser(ctx)
+    if (!user) return []
+    const event = await ctx.db.get(eventId)
+    if (!event || event.userId !== user._id) return []
+
     const base = process.env.MEDIA_BASE_URL
     const recs = await ctx.db
       .query("recordings")
@@ -152,6 +160,19 @@ export const listByEvent = query({
           ? `${base}/${r.normalizedKey}`
           : null,
     }))
+  },
+})
+
+// Ownership check for the current identity — used by r2.deleteRecording.
+export const canManageRecording = query({
+  args: { recordingId: v.id("recordings") },
+  handler: async (ctx, { recordingId }) => {
+    const user = await getUser(ctx)
+    if (!user) return false
+    const rec = await ctx.db.get(recordingId)
+    if (!rec) return false
+    const event = await ctx.db.get(rec.eventId)
+    return !!event && event.userId === user._id
   },
 })
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Hanken_Grotesk, Inter, Newsreader, Space_Mono } from "next/font/google"
 import { ClerkProvider } from "@clerk/nextjs"
 
+import { ConvexClientProvider } from "@/components/ConvexClientProvider"
 import { ThemeProvider } from "@/components/theme-provider"
 import { WaitlistProvider } from "@/components/landing/WaitlistModal"
 import { cn } from "@/lib/utils"
@@ -73,12 +74,24 @@ export default function RootLayout({
       <body>
         <ThemeProvider>
           <WaitlistProvider clerkEnabled={clerkEnabled}>
-            {children}
+            {/* Convex is wired to Clerk when configured; guests stay anonymous
+                and still reach public functions. */}
+            {clerkEnabled ? (
+              <ConvexClientProvider>{children}</ConvexClientProvider>
+            ) : (
+              children
+            )}
           </WaitlistProvider>
         </ThemeProvider>
       </body>
     </html>
   )
 
-  return clerkEnabled ? <ClerkProvider>{tree}</ClerkProvider> : tree
+  return clerkEnabled ? (
+    <ClerkProvider signInUrl="/sign-in" signInFallbackRedirectUrl="/">
+      {tree}
+    </ClerkProvider>
+  ) : (
+    tree
+  )
 }

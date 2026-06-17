@@ -1,7 +1,7 @@
 "use client"
 
-import { useAction, useQuery } from "convex/react"
-import { type ReactNode, useRef, useState } from "react"
+import { useAction, useMutation, useQuery } from "convex/react"
+import { type ReactNode, useEffect, useRef, useState } from "react"
 
 import { api } from "@/convex/_generated/api"
 import type { Id } from "@/convex/_generated/dataModel"
@@ -69,6 +69,13 @@ function CoupleNames({ value }: { value: string }) {
 }
 
 export function HostGallery({ eventId }: { eventId: Id<"events"> }) {
+  // Provision the user row on first authenticated visit so ownership checks
+  // resolve (lazy upsert by clerkId).
+  const ensureUser = useMutation(api.users.ensureUser)
+  useEffect(() => {
+    void ensureUser({}).catch(() => {})
+  }, [ensureUser])
+
   const event = useQuery(api.events.getById, { eventId })
   const recordings = useQuery(api.recordings.listByEvent, { eventId }) as
     | Recording[]
@@ -78,7 +85,7 @@ export function HostGallery({ eventId }: { eventId: Id<"events"> }) {
     return <Centered>Loading…</Centered>
   }
   if (event === null) {
-    return <Centered>This event doesn&apos;t exist.</Centered>
+    return <NoAccess eventId={eventId} />
   }
 
   const total = recordings.length
@@ -467,6 +474,46 @@ function RowPlayer({
         {fmtTime(playing ? t : dur)}
       </span>
     </div>
+  )
+}
+
+// Shown when the signed-in host doesn't own this event. For an UNOWNED event
+// (e.g. the seeded test event) they can adopt it; Stage 5 replaces this with
+// proper event creation + a "my events" list.
+function NoAccess({ eventId }: { eventId: Id<"events"> }) {
+  const claim = useMutation(api.events.claimEvent)
+  const [err, setErr] = useState<string | null>(null)
+  return (
+    <Centered>
+      <div style={{ textAlign: "center", maxWidth: 320 }}>
+        <p style={{ marginBottom: 16 }}>You don&apos;t own this guestbook yet.</p>
+        <button
+          onClick={() => {
+            setErr(null)
+            void claim({ eventId }).catch((e) =>
+              setErr(e instanceof Error ? e.message : "Couldn't claim it."),
+            )
+          }}
+          style={{
+            border: "none",
+            cursor: "pointer",
+            borderRadius: 999,
+            padding: "12px 20px",
+            fontFamily: "var(--font-hanken, system-ui)",
+            fontWeight: 600,
+            background: "var(--aloud-accent)",
+            color: "var(--aloud-accent-ink)",
+          }}
+        >
+          Claim this guestbook
+        </button>
+        {err && (
+          <p style={{ marginTop: 12, color: "var(--aloud-accent)", fontSize: 13 }}>
+            {err}
+          </p>
+        )}
+      </div>
+    </Centered>
   )
 }
 

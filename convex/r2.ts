@@ -3,7 +3,7 @@
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { v } from "convex/values"
 
-import { internal } from "./_generated/api"
+import { api, internal } from "./_generated/api"
 import { action } from "./_generated/server"
 
 // R2 object deletion (hard rule 7: deletion purges both R2 objects by key).
@@ -36,6 +36,11 @@ async function deleteKeys(keys: (string | null | undefined)[]) {
 export const deleteRecording = action({
   args: { recordingId: v.id("recordings") },
   handler: async (ctx, { recordingId }) => {
+    // Host-only: must own the recording's event (auth propagates to runQuery).
+    const allowed = await ctx.runQuery(api.recordings.canManageRecording, {
+      recordingId,
+    })
+    if (!allowed) throw new Error("Not allowed.")
     const rec = await ctx.runQuery(internal.recordings.getRecording, {
       recordingId,
     })
@@ -48,6 +53,8 @@ export const deleteRecording = action({
 export const deleteEvent = action({
   args: { eventId: v.id("events") },
   handler: async (ctx, { eventId }) => {
+    const allowed = await ctx.runQuery(api.events.ownsEvent, { eventId })
+    if (!allowed) throw new Error("Not allowed.")
     const recs = await ctx.runQuery(internal.recordings.recordingsForEvent, {
       eventId,
     })
