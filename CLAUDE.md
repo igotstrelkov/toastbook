@@ -25,7 +25,7 @@ Operating instructions for coding agents in this repo. **Read this every run.** 
 
 ## Stack
 
-Next.js (App Router, TypeScript) · Convex (DB, server functions, realtime, HTTP webhooks) · Clerk (host auth only) · Transloadit via `@transloadit/convex` (upload + loudnorm→mp3, output to R2) · Cloudflare R2 (media storage, public bucket on a custom domain) · Stripe (one-time payment) · Resend via `@convex-dev/resend` (email) · `@convex-dev/rate-limiter`. **No Inngest in the MVP.**
+Next.js (App Router, TypeScript) · Convex (DB, server functions, realtime, HTTP webhooks) · Clerk (host auth only — **email magic link / passwordless**) · Transloadit via `@transloadit/convex` (upload + loudnorm→mp3, output to R2) · Cloudflare R2 (media storage, public bucket on a custom domain) · Stripe (one-time payment) · Resend via `@convex-dev/resend` (email) · `@convex-dev/rate-limiter`. **No Inngest in the MVP.**
 
 ## Architecture (one paragraph)
 

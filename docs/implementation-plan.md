@@ -101,8 +101,8 @@ Feed these to a coding LLM **in order**, one at a time. Run each stage's accepta
 
 > Implement Stage 4 of Toastbook (see STANDING CONTEXT). Honor hard rule 2 (guests stay public).
 > **Objective:** only the owning host can see/manage their events.
-> **[MANUAL]:** Clerk JWT template named `convex`; set issuer in `convex/auth.config.ts`; add Clerk keys to env.
-> **Build:** wrap the app in `ClerkProvider` + `ConvexProviderWithClerk` (Clerk `useAuth`); use `clerkMiddleware` for protected routes; lazy `users` upsert on first authenticated mutation (`ctx.auth.getUserIdentity()` → upsert by `clerkId`); gate all host functions (`listByEvent` ownership, `deleteRecording`, `deleteEvent`, event CRUD) on identity → `users` row; **guest functions remain public**; sign-in/up UI; protect the dashboard.
+> **[MANUAL]:** Clerk JWT template named `convex`; set issuer in `convex/auth.config.ts`; add Clerk keys to env. **In the Clerk dashboard, enable email magic link (passwordless) as the sign-in method** (the chosen host auth method) — disable password unless explicitly wanted.
+> **Build:** wrap the app in `ClerkProvider` + `ConvexProviderWithClerk` (Clerk `useAuth`); use `clerkMiddleware` for protected routes; lazy `users` upsert on first authenticated mutation (`ctx.auth.getUserIdentity()` → upsert by `clerkId`); gate all host functions (`listByEvent` ownership, `deleteRecording`, `deleteEvent`, event CRUD) on identity → `users` row; **guest functions remain public**; **email-magic-link sign-in/up UI** (Clerk `<SignIn>`/`<SignUp>`); protect the dashboard.
 > **Acceptance:** signed-out users can't access the dashboard or call host functions; a host sees only their own events; a different user can't read/mutate another's data; guest recorder still works with no auth.
 > Implement only this stage, then stop.
 

@@ -170,7 +170,7 @@ No login. Security comes from slug validation + a fixed Template + rate limiting
 
 ## 5. Host flow
 
-1. Sign in with Clerk (Clerk sends the auth email).
+1. Sign in with Clerk via **email magic link** (passwordless — Clerk emails a sign-in link; this is the chosen host auth method, configured in the Clerk dashboard).
 2. Create an event (title, names, date, optional cover image + greeting). Cover/greeting upload via the same signed-Uppy → Transloadit → R2 path (image resize / audio normalize templates).
 3. Get a shareable link + downloadable **QR code** (`qrcode` package).
 4. Dashboard lists recordings via reactive `useQuery` — live, no polling. Each row: name, duration, status, inline player (plays `normalizedUrl` only when `ready`), and a **delete** control.
