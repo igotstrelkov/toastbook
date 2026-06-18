@@ -1,6 +1,7 @@
 import { SignIn } from "@clerk/nextjs"
 
-// Host sign-in (email magic link — configured in the Clerk dashboard).
+// In-app host sign-in (email magic link, configured in Clerk). Used by
+// clerkMiddleware redirects (signInUrl="/sign-in"); landing CTAs use the modal.
 export default function SignInPage() {
   return (
     <main

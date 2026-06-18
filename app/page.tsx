@@ -1,4 +1,5 @@
 import { CreateGuestbookButton } from "@/components/landing/CreateGuestbookButton"
+import { FooterAuthLink } from "@/components/landing/FooterAuthLink"
 import { CtaWave } from "@/components/landing/CtaWave"
 import { RevealScript } from "@/components/landing/RevealScript"
 import { StickyNav } from "@/components/landing/StickyNav"
@@ -404,11 +405,11 @@ export default function Page() {
                 <a href="#how">How it works</a>
                 <a href="#voices">Listen</a>
                 <a href="#pricing">Pricing</a>
-                <a href="/sign-in">Create a guestbook</a>
+                <FooterAuthLink>Create a guestbook</FooterAuthLink>
               </div>
               <div className="footer-col">
                 <h4>Hosts</h4>
-                <a href="/sign-in">Host login</a>
+                <FooterAuthLink>Host login</FooterAuthLink>
                 <a href="#">About</a>
                 <a href="#">Privacy</a>
                 <a href="#">Contact</a>

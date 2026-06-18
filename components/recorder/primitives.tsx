@@ -14,6 +14,22 @@ import { seededBars } from "@/lib/bars"
 // Primitives ported from the Toastbook (Aloud) design system. The design's
 // bare CSS vars (--paper, --accent, …) map to our --aloud-* tokens in globals.css.
 
+// iOS Safari yields audio/mp4; Chrome/Firefox yield audio/webm. Pick what the
+// device supports; never assume.
+export function pickMimeType(): string | undefined {
+  if (typeof MediaRecorder === "undefined") return undefined
+  for (const c of ["audio/mp4", "audio/webm"]) {
+    if (MediaRecorder.isTypeSupported(c)) return c
+  }
+  return undefined
+}
+
+export function extFromMime(mime: string): string {
+  if (mime.includes("mp4")) return "m4a"
+  if (mime.includes("ogg")) return "ogg"
+  return "webm"
+}
+
 export function fmtTime(s: number): string {
   s = Math.max(0, Math.floor(s))
   const m = Math.floor(s / 60)
@@ -90,6 +106,13 @@ export const IconRedo = (p: IconProps) => (
 export const IconArrow = (p: IconProps) => (
   <Ic {...p}>
     <path d="M5 12h14m0 0l-6-6m6 6l-6 6" />
+  </Ic>
+)
+export const IconImage = (p: IconProps) => (
+  <Ic {...p}>
+    <rect x="3.5" y="4.5" width="17" height="15" rx="2.5" />
+    <circle cx="9" cy="10" r="1.8" />
+    <path d="M21 17l-5-5-8 7" />
   </Ic>
 )
 export const IconCopy = (p: IconProps) => (

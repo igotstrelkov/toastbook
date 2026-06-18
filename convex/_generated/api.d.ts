@@ -12,6 +12,7 @@ import type * as crons from "../crons.js";
 import type * as events from "../events.js";
 import type * as guest from "../guest.js";
 import type * as health from "../health.js";
+import type * as host from "../host.js";
 import type * as http from "../http.js";
 import type * as r2 from "../r2.js";
 import type * as recordings from "../recordings.js";
@@ -30,6 +31,7 @@ declare const fullApi: ApiFromModules<{
   events: typeof events;
   guest: typeof guest;
   health: typeof health;
+  host: typeof host;
   http: typeof http;
   r2: typeof r2;
   recordings: typeof recordings;

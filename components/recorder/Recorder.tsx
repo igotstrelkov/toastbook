@@ -17,6 +17,7 @@ import { api } from "@/convex/_generated/api"
 import {
   Btn,
   Eyebrow,
+  extFromMime,
   fmtTime,
   IconArrow,
   IconCheck,
@@ -26,6 +27,7 @@ import {
   IconRedo,
   IconWave,
   LevelMeter,
+  pickMimeType,
   useInterval,
   Waveform,
 } from "./primitives"
@@ -37,7 +39,6 @@ type RecorderEvent = {
   date: string
   coverUrl: string | null
   greetingUrl: string | null
-  greetDur: number
 }
 
 function formatDate(iso: string): string {
@@ -82,20 +83,6 @@ type Screen =
   | "name"
   | "uploading"
   | "done"
-
-function pickMimeType(): string | undefined {
-  if (typeof MediaRecorder === "undefined") return undefined
-  for (const c of ["audio/mp4", "audio/webm"]) {
-    if (MediaRecorder.isTypeSupported(c)) return c
-  }
-  return undefined
-}
-
-function extFromMime(mime: string): string {
-  if (mime.includes("mp4")) return "m4a"
-  if (mime.includes("ogg")) return "ogg"
-  return "webm"
-}
 
 export function Recorder({ slug }: { slug: string }) {
   const eventData = useQuery(api.events.getEventBySlug, { slug })
@@ -268,7 +255,6 @@ export function Recorder({ slug }: { slug: string }) {
         date: formatDate(eventData.eventDate),
         coverUrl: eventData.coverUrl,
         greetingUrl: eventData.greetingUrl,
-        greetDur: 12,
       }
     : null
 
@@ -420,20 +406,17 @@ function GScreen({
 
 /* 1. Cover */
 function GCover({ event, onRecord }: { event: Event; onRecord: () => void }) {
+  // Real greeting playback (when the host recorded one), synced to the waveform.
+  const greetAudioRef = useRef<HTMLAudioElement>(null)
   const [greet, setGreet] = useState(false)
   const [gt, setGt] = useState(0)
-  useInterval(
-    () =>
-      setGt((p) => {
-        const n = p + 0.1
-        if (n >= event.greetDur) {
-          setGreet(false)
-          return 0
-        }
-        return n
-      }),
-    greet ? 100 : null,
-  )
+  const [greetDur, setGreetDur] = useState(0)
+  const toggleGreet = () => {
+    const a = greetAudioRef.current
+    if (!a) return
+    if (greet) a.pause()
+    else void a.play().catch(() => {})
+  }
   return (
     <GScreen>
       <div
@@ -551,62 +534,79 @@ function GCover({ event, onRecord }: { event: Event; onRecord: () => void }) {
         </div>
       </div>
 
-      <button
-        onClick={() => setGreet((g) => !g)}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-          padding: "11px 13px",
-          margin: "22px 0 0",
-          background: "var(--aloud-paper-2)",
-          border: "1.4px solid var(--aloud-line)",
-          borderRadius: 18,
-          cursor: "pointer",
-          textAlign: "left",
-          width: "100%",
-        }}
-      >
-        <span
+      {event.greetingUrl && (
+        <button
+          onClick={toggleGreet}
           style={{
-            width: 36,
-            height: 36,
-            borderRadius: "50%",
-            background: "var(--aloud-ink)",
-            color: "var(--aloud-paper)",
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
+            gap: 12,
+            padding: "11px 13px",
+            margin: "22px 0 0",
+            background: "var(--aloud-paper-2)",
+            border: "1.4px solid var(--aloud-line)",
+            borderRadius: 18,
+            cursor: "pointer",
+            textAlign: "left",
+            width: "100%",
           }}
         >
-          {greet ? <IconPause size={15} /> : <IconPlay size={15} style={{ marginLeft: 2 }} />}
-        </span>
-        <span style={{ flex: 1, minWidth: 0 }}>
-          <span style={{ display: "block", fontSize: 13.5, fontWeight: 600 }}>
-            A hello from the couple
+          <audio
+            ref={greetAudioRef}
+            src={event.greetingUrl}
+            onLoadedMetadata={(e) => {
+              const d = e.currentTarget.duration
+              if (isFinite(d) && d > 0) setGreetDur(d)
+            }}
+            onTimeUpdate={(e) => setGt(e.currentTarget.currentTime)}
+            onPlay={() => setGreet(true)}
+            onPause={() => setGreet(false)}
+            onEnded={() => {
+              setGreet(false)
+              setGt(0)
+            }}
+          />
+          <span
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: "50%",
+              background: "var(--aloud-ink)",
+              color: "var(--aloud-paper)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            {greet ? <IconPause size={15} /> : <IconPlay size={15} style={{ marginLeft: 2 }} />}
           </span>
-          <div style={{ color: "var(--aloud-ink-faint)", marginTop: 4 }}>
-            <Waveform
-              seed="greeting"
-              n={32}
-              progress={greet ? gt / event.greetDur : 0}
-              played="var(--aloud-accent)"
-              height={16}
-              barW={2.5}
-            />
-          </div>
-        </span>
-        <span
-          style={{
-            fontFamily: "var(--font-space-mono, monospace)",
-            fontSize: 12,
-            color: "var(--aloud-ink-soft)",
-          }}
-        >
-          0:{String(event.greetDur).padStart(2, "0")}
-        </span>
-      </button>
+          <span style={{ flex: 1, minWidth: 0 }}>
+            <span style={{ display: "block", fontSize: 13.5, fontWeight: 600 }}>
+              A hello from the couple
+            </span>
+            <div style={{ color: "var(--aloud-ink-faint)", marginTop: 4 }}>
+              <Waveform
+                seed="greeting"
+                n={32}
+                progress={greetDur ? gt / greetDur : 0}
+                played="var(--aloud-accent)"
+                height={16}
+                barW={2.5}
+              />
+            </div>
+          </span>
+          <span
+            style={{
+              fontFamily: "var(--font-space-mono, monospace)",
+              fontSize: 12,
+              color: "var(--aloud-ink-soft)",
+            }}
+          >
+            {fmtTime(greet ? gt : greetDur)}
+          </span>
+        </button>
+      )}
 
       <div style={{ flex: 1, minHeight: 18 }} />
 

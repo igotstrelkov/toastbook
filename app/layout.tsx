@@ -1,11 +1,10 @@
+import { ClerkProvider } from "@clerk/nextjs"
 import type { Metadata } from "next"
 import { Hanken_Grotesk, Inter, Newsreader, Space_Mono } from "next/font/google"
 import Script from "next/script"
-import { ClerkProvider } from "@clerk/nextjs"
 
 import { ConvexClientProvider } from "@/components/ConvexClientProvider"
 import { ThemeProvider } from "@/components/theme-provider"
-import { WaitlistProvider } from "@/components/landing/WaitlistModal"
 import { cn } from "@/lib/utils"
 import "./globals.css"
 
@@ -87,15 +86,13 @@ export default function RootLayout({
           `}
         </Script>
         <ThemeProvider>
-          <WaitlistProvider clerkEnabled={clerkEnabled}>
-            {/* Convex is wired to Clerk when configured; guests stay anonymous
-                and still reach public functions. */}
-            {clerkEnabled ? (
-              <ConvexClientProvider>{children}</ConvexClientProvider>
-            ) : (
-              children
-            )}
-          </WaitlistProvider>
+          {/* Convex is wired to Clerk when configured; guests stay anonymous
+              and still reach public functions. */}
+          {clerkEnabled ? (
+            <ConvexClientProvider>{children}</ConvexClientProvider>
+          ) : (
+            children
+          )}
         </ThemeProvider>
       </body>
     </html>
@@ -104,8 +101,10 @@ export default function RootLayout({
   return clerkEnabled ? (
     <ClerkProvider
       signInUrl="/sign-in"
-      signInFallbackRedirectUrl="/dashboard"
-      signUpFallbackRedirectUrl="/dashboard"
+      // Force (not fallback) so we always land on the dashboard, even when
+      // sign-in starts from "/" (which would otherwise return there).
+      signInForceRedirectUrl="/dashboard"
+      signUpForceRedirectUrl="/dashboard"
     >
       {tree}
     </ClerkProvider>

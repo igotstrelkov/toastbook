@@ -1,12 +1,14 @@
 "use client"
 
+import { SignOutButton } from "@clerk/nextjs"
 import { useQuery } from "convex/react"
 import Link from "next/link"
 
-import { api } from "@/convex/_generated/api"
 import { Eyebrow, IconWave } from "@/components/recorder/primitives"
+import { api } from "@/convex/_generated/api"
 import { useStoreUser } from "@/hooks/use-store-user"
 import type { CSSProperties } from "react"
+import { Centered } from "./ShareEvent"
 
 const createBtn: CSSProperties = {
   textDecoration: "none",
@@ -21,12 +23,28 @@ const createBtn: CSSProperties = {
   display: "inline-block",
 }
 
+const signOutBtn: CSSProperties = {
+  border: "1.4px solid var(--aloud-line)",
+  background: "var(--aloud-paper)",
+  borderRadius: 999,
+  padding: "11px 18px",
+  fontFamily: "var(--font-hanken, system-ui)",
+  fontWeight: 600,
+  fontSize: 14,
+  color: "var(--aloud-ink-soft)",
+  cursor: "pointer",
+}
+
 // Host home — the post-sign-in landing. Lists the host's guestbooks (event
 // creation lands in Stage 5; until then this is empty unless you've claimed
 // the seeded test event).
 export function HostHome() {
   const { ready } = useStoreUser()
   const events = useQuery(api.events.listMine, ready ? {} : "skip")
+
+  if (!ready || events === undefined) {
+    return <Centered>Loading…</Centered>
+  }
 
   return (
     <main
@@ -37,7 +55,9 @@ export function HostHome() {
         color: "var(--aloud-ink)",
       }}
     >
-      <div style={{ maxWidth: 720, margin: "0 auto", padding: "48px 28px 70px" }}>
+      <div
+        style={{ maxWidth: 720, margin: "0 auto", padding: "48px 28px 70px" }}
+      >
         <div
           style={{
             display: "flex",
@@ -62,14 +82,17 @@ export function HostHome() {
               Welcome back.
             </h1>
           </div>
-          <Link href="/dashboard/new" style={createBtn}>
-            + Create a guestbook
-          </Link>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <SignOutButton redirectUrl="/">
+              <button style={signOutBtn}>Sign out</button>
+            </SignOutButton>
+            <Link href="/dashboard/new" style={createBtn}>
+              + Create a guestbook
+            </Link>
+          </div>
         </div>
 
-        {!ready || events === undefined ? (
-          <p style={{ color: "var(--aloud-ink-faint)" }}>Loading…</p>
-        ) : events.length === 0 ? (
+        {events.length === 0 ? (
           <div
             style={{
               border: "1.4px solid var(--aloud-line)",

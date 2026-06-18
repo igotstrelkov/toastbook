@@ -6,6 +6,8 @@ import { type ReactNode, useRef, useState } from "react"
 
 import { api } from "@/convex/_generated/api"
 import type { Id } from "@/convex/_generated/dataModel"
+import { CoverUpload } from "@/components/host/CoverUpload"
+import { GreetingRecorder } from "@/components/host/GreetingRecorder"
 import { useStoreUser } from "@/hooks/use-store-user"
 import {
   Avatar,
@@ -183,6 +185,10 @@ export function HostGallery({ eventId }: { eventId: Id<"events"> }) {
             </Link>
           </div>
         </div>
+
+        {/* event setup */}
+        <CoverUpload eventId={eventId} coverUrl={event.coverUrl} />
+        <GreetingRecorder eventId={eventId} greetingUrl={event.greetingUrl} />
 
         {/* toolbar */}
         <div

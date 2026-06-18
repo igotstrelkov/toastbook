@@ -432,8 +432,8 @@ main, nav, footer { position: relative; z-index: 2; }
 .footer-tag { font-family: var(--font-newsreader, Georgia, serif); font-style: italic; font-size: 16px; color: var(--aloud-ink-soft); margin-top: 8px; max-width: 26ch; }
 .footer-cols { display: flex; gap: 64px; flex-wrap: wrap; }
 .footer-col h4 { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--aloud-ink-faint); margin: 0 0 14px; font-weight: 600; }
-.footer-col a { display: block; font-size: 14px; color: var(--aloud-ink-soft); text-decoration: none; margin-bottom: 10px; }
-.footer-col a:hover { color: var(--aloud-ink); }
+.footer-col a, .footer-col button { display: block; font-size: 14px; color: var(--aloud-ink-soft); text-decoration: none; margin-bottom: 10px; background: none; border: none; padding: 0; text-align: left; cursor: pointer; font-family: inherit; }
+.footer-col a:hover, .footer-col button:hover { color: var(--aloud-ink); }
 .footer-base { margin-top: 44px; padding-top: 22px; border-top: 1px solid var(--aloud-line); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 12.5px; color: var(--aloud-ink-faint); }
 
 /* ── mobile improvements ── */

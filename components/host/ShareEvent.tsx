@@ -1,12 +1,11 @@
 "use client"
 
 import { useQuery } from "convex/react"
+import { jsPDF } from "jspdf"
 import Link from "next/link"
 import QRCode from "qrcode"
-import { useEffect, useState } from "react"
+import { type CSSProperties, useEffect, useState } from "react"
 
-import { api } from "@/convex/_generated/api"
-import type { Id } from "@/convex/_generated/dataModel"
 import {
   Btn,
   Eyebrow,
@@ -15,7 +14,24 @@ import {
   IconCopy,
   IconDownload,
 } from "@/components/recorder/primitives"
+import { api } from "@/convex/_generated/api"
+import type { Id } from "@/convex/_generated/dataModel"
 import { useStoreUser } from "@/hooks/use-store-user"
+
+const qrBtn: CSSProperties = {
+  textDecoration: "none",
+  border: "1.4px solid var(--aloud-line)",
+  borderRadius: 999,
+  padding: "10px 15px",
+  fontSize: 13,
+  fontWeight: 600,
+  fontFamily: "var(--font-hanken, system-ui)",
+  color: "var(--aloud-ink)",
+  background: "var(--aloud-paper)",
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 7,
+}
 
 export function ShareEvent({ eventId }: { eventId: Id<"events"> }) {
   const { ready } = useStoreUser()
@@ -50,6 +66,33 @@ export function ShareEvent({ eventId }: { eventId: Id<"events"> }) {
       setCopied(true)
       setTimeout(() => setCopied(false), 1800)
     })
+  }
+
+  const names = event.coupleNames ?? event.title
+  const slug = event.slug
+  function downloadPdf() {
+    if (!qr) return
+    const doc = new jsPDF({ unit: "pt", format: "a4" })
+    const pageW = doc.internal.pageSize.getWidth()
+    const qrSize = 248
+    const x = (pageW - qrSize) / 2
+    const top = 200
+    doc.setDrawColor(216, 207, 193)
+    doc.setLineWidth(1.2)
+    doc.roundedRect(x - 46, top - 86, qrSize + 92, qrSize + 210, 18, 18)
+    doc.setFont("times", "normal")
+    doc.setTextColor(35, 26, 18)
+    doc.setFontSize(30)
+    doc.text(names, pageW / 2, top - 38, { align: "center" })
+    doc.addImage(qr, "PNG", x, top, qrSize, qrSize)
+    doc.setFontSize(11)
+    doc.setTextColor(120, 110, 96)
+    doc.text("SCAN TO LEAVE A VOICE MESSAGE", pageW / 2, top + qrSize + 40, {
+      align: "center",
+    })
+    doc.setFontSize(10)
+    doc.text(shareUrl, pageW / 2, top + qrSize + 62, { align: "center" })
+    doc.save(`toastbook-${slug}-cards.pdf`)
   }
 
   return (
@@ -124,7 +167,13 @@ export function ShareEvent({ eventId }: { eventId: Id<"events"> }) {
             >
               {qr ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={qr} alt="QR code" width={176} height={176} style={{ display: "block" }} />
+                <img
+                  src={qr}
+                  alt="QR code"
+                  width={176}
+                  height={176}
+                  style={{ display: "block" }}
+                />
               ) : (
                 <div style={{ width: 176, height: 176 }} />
               )}
@@ -222,30 +271,32 @@ export function ShareEvent({ eventId }: { eventId: Id<"events"> }) {
                   For screens and printed table cards.
                 </div>
               </div>
-              <a
-                href={qr || undefined}
-                download={`toastbook-${event.slug}.png`}
-                style={{
-                  marginLeft: "auto",
-                  textDecoration: "none",
-                  border: "1.4px solid var(--aloud-line)",
-                  borderRadius: 999,
-                  padding: "10px 15px",
-                  fontSize: 13,
-                  fontWeight: 600,
-                  fontFamily: "var(--font-hanken, system-ui)",
-                  color: "var(--aloud-ink)",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 7,
-                }}
-              >
-                <IconDownload size={15} /> PNG
-              </a>
+              <div style={{ marginLeft: "auto", display: "flex", gap: 9 }}>
+                <a
+                  href={qr || undefined}
+                  download={`toastbook-${event.slug}.png`}
+                  style={qrBtn}
+                >
+                  <IconDownload size={15} /> PNG
+                </a>
+                <button
+                  onClick={downloadPdf}
+                  style={{
+                    ...qrBtn,
+                    cursor: "pointer",
+                    background: "var(--aloud-paper)",
+                  }}
+                >
+                  <IconDownload size={15} /> PDF cards
+                </button>
+              </div>
             </div>
 
             <div style={{ flex: 1 }} />
-            <Link href={`/dashboard/${eventId}`} style={{ textDecoration: "none" }}>
+            <Link
+              href={`/dashboard/${eventId}`}
+              style={{ textDecoration: "none" }}
+            >
               <Btn variant="accent" size="lg" block>
                 Open your dashboard <IconArrow size={18} />
               </Btn>
@@ -257,7 +308,7 @@ export function ShareEvent({ eventId }: { eventId: Id<"events"> }) {
   )
 }
 
-function Centered({ children }: { children: React.ReactNode }) {
+export function Centered({ children }: { children: React.ReactNode }) {
   return (
     <div
       className="aloud"

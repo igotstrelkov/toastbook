@@ -1,6 +1,11 @@
 import { v } from "convex/values"
 
-import { internalQuery, mutation, query } from "./_generated/server"
+import {
+  internalMutation,
+  internalQuery,
+  mutation,
+  query,
+} from "./_generated/server"
 import { getUser, requireUser } from "./users"
 
 // Public, guest-callable. Returns ONLY display fields for an ACTIVE event, and
@@ -47,8 +52,9 @@ export const getById = query({
       status: event.status,
       isPaid: event.isPaid,
       slug: event.slug,
-      coverUrl:
-        event.coverKey && base ? `${base}/${event.coverKey}` : null,
+      coverUrl: event.coverKey && base ? `${base}/${event.coverKey}` : null,
+      greetingUrl:
+        event.greetingKey && base ? `${base}/${event.greetingKey}` : null,
     }
   },
 })
@@ -138,6 +144,22 @@ export const claimEvent = mutation({
     }
     await ctx.db.patch(eventId, { userId: user._id })
     return user._id
+  },
+})
+
+// Internal: attach a stored R2 key (cover/greeting) to the event. Ownership is
+// already verified by the calling host action (host.finalizeEventAsset).
+export const setAssetKey = internalMutation({
+  args: {
+    eventId: v.id("events"),
+    kind: v.union(v.literal("cover"), v.literal("greeting")),
+    key: v.string(),
+  },
+  handler: async (ctx, { eventId, kind, key }) => {
+    await ctx.db.patch(
+      eventId,
+      kind === "cover" ? { coverKey: key } : { greetingKey: key },
+    )
   },
 })
 
