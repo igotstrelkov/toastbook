@@ -4,8 +4,9 @@ import { useMutation } from "convex/react"
 import { useRouter } from "next/navigation"
 import { type CSSProperties, useState } from "react"
 
+import { BackLink } from "@/components/host/BackLink"
+import { Btn, IconArrow } from "@/components/recorder/primitives"
 import { api } from "@/convex/_generated/api"
-import { Btn, Eyebrow, IconArrow } from "@/components/recorder/primitives"
 import { useStoreUser } from "@/hooks/use-store-user"
 
 const inputStyle: CSSProperties = {
@@ -39,7 +40,12 @@ export function CreateEvent() {
   const [date, setDate] = useState("")
   const [busy, setBusy] = useState(false)
 
-  const canSubmit = ready && a.trim().length > 0 && b.trim().length > 0 && !busy
+  const canSubmit =
+    ready &&
+    a.trim().length > 0 &&
+    b.trim().length > 0 &&
+    date.trim().length > 0 &&
+    !busy
 
   async function submit() {
     if (!canSubmit) return
@@ -65,8 +71,11 @@ export function CreateEvent() {
         color: "var(--aloud-ink)",
       }}
     >
-      <div style={{ maxWidth: 560, margin: "0 auto", padding: "48px 28px 70px" }}>
-        <Eyebrow>New event</Eyebrow>
+      <div
+        style={{ maxWidth: 560, margin: "0 auto", padding: "48px 28px 70px" }}
+      >
+        <BackLink href="/dashboard">Your guestbooks</BackLink>
+        {/* <Eyebrow>New event</Eyebrow> */}
         <h1
           style={{
             fontFamily: "var(--font-newsreader, Georgia, serif)",
@@ -138,7 +147,13 @@ export function CreateEvent() {
           A cover photo and a recorded welcome are coming soon.
         </p>
 
-        <Btn variant="accent" size="lg" block disabled={!canSubmit} onClick={submit}>
+        <Btn
+          variant="accent"
+          size="lg"
+          block
+          disabled={!canSubmit}
+          onClick={submit}
+        >
           {busy ? "Creating…" : "Create event"} <IconArrow size={18} />
         </Btn>
       </div>

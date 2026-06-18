@@ -16,8 +16,8 @@ import { api } from "@/convex/_generated/api"
 
 import {
   Btn,
-  Eyebrow,
   extFromMime,
+  Eyebrow,
   fmtTime,
   IconArrow,
   IconCheck,
@@ -117,7 +117,7 @@ export function Recorder({ slug }: { slug: string }) {
       setElapsed(n)
       if (n >= CAP) stopRecording(CAP)
     },
-    screen === "recording" ? 100 : null,
+    screen === "recording" ? 100 : null
   )
 
   // Mic permission MUST be requested inside the tap handler (iOS blocks otherwise).
@@ -149,7 +149,7 @@ export function Recorder({ slug }: { slug: string }) {
       setScreen("recording")
     } catch {
       setError(
-        "We couldn't access your microphone. Please allow access in your browser and try again.",
+        "We couldn't access your microphone. Please allow access in your browser and try again."
       )
     }
   }, [stopStream])
@@ -429,7 +429,7 @@ function GCover({ event, onRecord }: { event: Event; onRecord: () => void }) {
         }}
       >
         <IconWave size={15} style={{ color: "var(--aloud-accent)" }} />
-        <Eyebrow>A Voice Guestbook</Eyebrow>
+        {/* <Eyebrow>A Voice Guestbook</Eyebrow> */}
       </div>
 
       <div
@@ -579,7 +579,11 @@ function GCover({ event, onRecord }: { event: Event; onRecord: () => void }) {
               flexShrink: 0,
             }}
           >
-            {greet ? <IconPause size={15} /> : <IconPlay size={15} style={{ marginLeft: 2 }} />}
+            {greet ? (
+              <IconPause size={15} />
+            ) : (
+              <IconPlay size={15} style={{ marginLeft: 2 }} />
+            )}
           </span>
           <span style={{ flex: 1, minWidth: 0 }}>
             <span style={{ display: "block", fontSize: 13.5, fontWeight: 600 }}>
@@ -678,15 +682,21 @@ function GPermission({
             margin: "0 auto 30px",
           }}
         >
-          Tap allow, then speak when you&apos;re ready. Nothing is sent until you
-          press{" "}
+          Tap allow, then speak when you&apos;re ready. Nothing is sent until
+          you press{" "}
           <em style={{ fontFamily: "var(--font-newsreader, Georgia, serif)" }}>
             Keep
           </em>{" "}
           — re-record as many times as you like.
         </p>
         {error && (
-          <p style={{ color: "var(--aloud-accent)", marginBottom: 16, fontSize: 14 }}>
+          <p
+            style={{
+              color: "var(--aloud-accent)",
+              marginBottom: 16,
+              fontSize: 14,
+            }}
+          >
             {error}
           </p>
         )}
@@ -773,8 +783,19 @@ function GRecording({
           / {fmtTime(CAP)}
         </div>
 
-        <div style={{ display: "flex", justifyContent: "center", margin: "38px 0 8px" }}>
-          <LevelMeter active bars={21} color="var(--aloud-accent)" height={86} />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            margin: "38px 0 8px",
+          }}
+        >
+          <LevelMeter
+            active
+            bars={21}
+            color="var(--aloud-accent)"
+            height={86}
+          />
         </div>
 
         <div
@@ -913,7 +934,13 @@ function GPreview({
             }}
           />
         )}
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: 20,
+          }}
+        >
           <button
             onClick={toggle}
             aria-label={playing ? "Pause" : "Play"}
@@ -931,7 +958,11 @@ function GPreview({
               boxShadow: "0 12px 26px -10px rgba(182,95,63,0.7)",
             }}
           >
-            {playing ? <IconPause size={26} /> : <IconPlay size={26} style={{ marginLeft: 3 }} />}
+            {playing ? (
+              <IconPause size={26} />
+            ) : (
+              <IconPlay size={26} style={{ marginLeft: 3 }} />
+            )}
           </button>
         </div>
         <div style={{ color: "var(--aloud-ink-faint)" }}>
@@ -949,7 +980,13 @@ function GPreview({
             }}
           />
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 12 }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginTop: 12,
+          }}
+        >
           <span
             style={{
               fontFamily: "var(--font-space-mono, monospace)",
@@ -972,7 +1009,13 @@ function GPreview({
       </div>
 
       {error && (
-        <p style={{ color: "var(--aloud-accent)", marginTop: 16, textAlign: "center" }}>
+        <p
+          style={{
+            color: "var(--aloud-accent)",
+            marginTop: 16,
+            textAlign: "center",
+          }}
+        >
           {error}
         </p>
       )}
@@ -1061,9 +1104,28 @@ function GUploading({ pct, status }: { pct: number; status: string }) {
   return (
     <GScreen center>
       <div style={{ textAlign: "center" }}>
-        <div style={{ position: "relative", width: 96, height: 96, margin: "0 auto 30px" }}>
-          <svg width="96" height="96" viewBox="0 0 96 96" style={{ transform: "rotate(-90deg)" }}>
-            <circle cx="48" cy="48" r={R} fill="none" stroke="var(--aloud-line)" strokeWidth="5" />
+        <div
+          style={{
+            position: "relative",
+            width: 96,
+            height: 96,
+            margin: "0 auto 30px",
+          }}
+        >
+          <svg
+            width="96"
+            height="96"
+            viewBox="0 0 96 96"
+            style={{ transform: "rotate(-90deg)" }}
+          >
+            <circle
+              cx="48"
+              cy="48"
+              r={R}
+              fill="none"
+              stroke="var(--aloud-line)"
+              strokeWidth="5"
+            />
             <circle
               cx="48"
               cy="48"
@@ -1108,7 +1170,13 @@ function GUploading({ pct, status }: { pct: number; status: string }) {
         >
           {status}
         </p>
-        <p style={{ fontSize: 13.5, color: "var(--aloud-ink-faint)", marginTop: 14 }}>
+        <p
+          style={{
+            fontSize: 13.5,
+            color: "var(--aloud-ink-faint)",
+            marginTop: 14,
+          }}
+        >
           Keep this page open for a moment.
         </p>
       </div>

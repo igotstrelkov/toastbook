@@ -324,6 +324,9 @@ export default function Page() {
                   <li>
                     <Tick /> Share a read-only gallery
                   </li>
+                  <li style={{ opacity: 0.62 }}>
+                    <Tick /> Video messages <span className="soon-badge">Coming soon</span>
+                  </li>
                 </ul>
                 {/* <Button
                   variant="accent"

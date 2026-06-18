@@ -4,11 +4,9 @@ import { useAction, useMutation, useQuery } from "convex/react"
 import Link from "next/link"
 import { type ReactNode, useRef, useState } from "react"
 
-import { api } from "@/convex/_generated/api"
-import type { Id } from "@/convex/_generated/dataModel"
+import { BackLink } from "@/components/host/BackLink"
 import { CoverUpload } from "@/components/host/CoverUpload"
 import { GreetingRecorder } from "@/components/host/GreetingRecorder"
-import { useStoreUser } from "@/hooks/use-store-user"
 import {
   Avatar,
   Eyebrow,
@@ -21,6 +19,9 @@ import {
   IconX,
   Waveform,
 } from "@/components/recorder/primitives"
+import { api } from "@/convex/_generated/api"
+import type { Id } from "@/convex/_generated/dataModel"
+import { useStoreUser } from "@/hooks/use-store-user"
 
 type Recording = {
   _id: Id<"recordings">
@@ -79,7 +80,7 @@ export function HostGallery({ eventId }: { eventId: Id<"events"> }) {
   const event = useQuery(api.events.getById, ready ? { eventId } : "skip")
   const recordings = useQuery(
     api.recordings.listByEvent,
-    ready ? { eventId } : "skip",
+    ready ? { eventId } : "skip"
   ) as Recording[] | undefined
 
   if (!ready || event === undefined || recordings === undefined) {
@@ -101,7 +102,11 @@ export function HostGallery({ eventId }: { eventId: Id<"events"> }) {
         color: "var(--aloud-ink)",
       }}
     >
-      <div style={{ maxWidth: 940, margin: "0 auto", padding: "30px 28px 70px" }}>
+      <div
+        style={{ maxWidth: 940, margin: "0 auto", padding: "30px 28px 70px" }}
+      >
+        <BackLink href="/dashboard">Your guestbooks</BackLink>
+
         {/* header */}
         <div
           style={{
@@ -114,7 +119,7 @@ export function HostGallery({ eventId }: { eventId: Id<"events"> }) {
           }}
         >
           <div>
-            <Eyebrow>Voice guestbook</Eyebrow>
+            {/* <Eyebrow>Voice guestbook</Eyebrow> */}
             <h1
               style={{
                 fontFamily: "var(--font-newsreader, Georgia, serif)",
@@ -251,7 +256,15 @@ export function HostGallery({ eventId }: { eventId: Id<"events"> }) {
   )
 }
 
-function Stat({ n, label, mono }: { n: string; label: string; mono?: boolean }) {
+function Stat({
+  n,
+  label,
+  mono,
+}: {
+  n: string
+  label: string
+  mono?: boolean
+}) {
   return (
     <div>
       <div
@@ -314,7 +327,11 @@ function RecRow({ r, last }: { r: Recording; last: boolean }) {
 
       <div style={{ flex: 1, minWidth: 0 }}>
         {r.status === "ready" && r.normalizedUrl ? (
-          <RowPlayer url={r.normalizedUrl} seed={r._id} duration={r.durationSeconds} />
+          <RowPlayer
+            url={r.normalizedUrl}
+            seed={r._id}
+            duration={r.durationSeconds}
+          />
         ) : r.status === "failed" ? (
           <span style={{ fontSize: 13, color: "var(--aloud-ink-faint)" }}>
             Couldn&apos;t process this message.
@@ -435,7 +452,9 @@ function RowPlayer({
   }
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10, width: "100%" }}>
+    <div
+      style={{ display: "flex", alignItems: "center", gap: 10, width: "100%" }}
+    >
       <audio
         ref={audioRef}
         src={url}
@@ -469,7 +488,11 @@ function RowPlayer({
           color: playing ? "var(--aloud-accent-ink)" : "var(--aloud-paper)",
         }}
       >
-        {playing ? <IconPause size={15} /> : <IconPlay size={15} style={{ marginLeft: 2 }} />}
+        {playing ? (
+          <IconPause size={15} />
+        ) : (
+          <IconPlay size={15} style={{ marginLeft: 2 }} />
+        )}
       </button>
       <div style={{ flex: 1, minWidth: 0, color: "var(--aloud-ink-faint)" }}>
         <Waveform
@@ -509,12 +532,14 @@ function NoAccess({ eventId }: { eventId: Id<"events"> }) {
   return (
     <Centered>
       <div style={{ textAlign: "center", maxWidth: 320 }}>
-        <p style={{ marginBottom: 16 }}>You don&apos;t own this guestbook yet.</p>
+        <p style={{ marginBottom: 16 }}>
+          You don&apos;t own this guestbook yet.
+        </p>
         <button
           onClick={() => {
             setErr(null)
             void claim({ eventId }).catch((e) =>
-              setErr(e instanceof Error ? e.message : "Couldn't claim it."),
+              setErr(e instanceof Error ? e.message : "Couldn't claim it.")
             )
           }}
           style={{
@@ -531,7 +556,13 @@ function NoAccess({ eventId }: { eventId: Id<"events"> }) {
           Claim this guestbook
         </button>
         {err && (
-          <p style={{ marginTop: 12, color: "var(--aloud-accent)", fontSize: 13 }}>
+          <p
+            style={{
+              marginTop: 12,
+              color: "var(--aloud-accent)",
+              fontSize: 13,
+            }}
+          >
             {err}
           </p>
         )}

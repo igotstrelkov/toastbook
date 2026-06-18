@@ -384,6 +384,7 @@ main, nav, footer { position: relative; z-index: 2; }
 .feat-list { list-style: none; padding: 0; margin: 0 0 26px; display: flex; flex-direction: column; gap: 13px; }
 .feat-list li { display: flex; align-items: flex-start; gap: 11px; font-size: 14.5px; color: var(--aloud-ink); }
 .feat-list .tick { color: var(--aloud-accent); flex-shrink: 0; margin-top: 2px; }
+.soon-badge { font-family: var(--font-hanken, system-ui); font-size: 9.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--aloud-accent); background: var(--aloud-accent-tint); padding: 2px 7px; border-radius: 6px; white-space: nowrap; align-self: center; }
 @media (max-width: 760px) {
   .price-grid { grid-template-columns: 1fr; }
   .price-col + .price-col { border-left: none; border-top: 1.4px solid var(--aloud-line); }

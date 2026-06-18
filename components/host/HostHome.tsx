@@ -4,7 +4,7 @@ import { SignOutButton } from "@clerk/nextjs"
 import { useQuery } from "convex/react"
 import Link from "next/link"
 
-import { Eyebrow, IconWave } from "@/components/recorder/primitives"
+import { IconWave } from "@/components/recorder/primitives"
 import { api } from "@/convex/_generated/api"
 import { useStoreUser } from "@/hooks/use-store-user"
 import type { CSSProperties } from "react"
@@ -69,7 +69,7 @@ export function HostHome() {
           }}
         >
           <div>
-            <Eyebrow>Your guestbooks</Eyebrow>
+            {/* <Eyebrow>Your guestbooks</Eyebrow> */}
             <h1
               style={{
                 fontFamily: "var(--font-newsreader, Georgia, serif)",

@@ -112,6 +112,9 @@ export function ShareEvent({ eventId }: { eventId: Id<"events"> }) {
           textAlign: "center",
         }}
       >
+        {/* <div style={{ textAlign: "left" }}>
+          <BackLink href={`/dashboard/${eventId}`}>Dashboard</BackLink>
+        </div> */}
         <Eyebrow>You&apos;re live</Eyebrow>
         <h1
           style={{

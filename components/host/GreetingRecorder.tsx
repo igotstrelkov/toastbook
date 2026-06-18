@@ -5,11 +5,9 @@ import Transloadit, { type AssemblyOptions } from "@uppy/transloadit"
 import { useAction } from "convex/react"
 import { useCallback, useRef, useState } from "react"
 
-import { api } from "@/convex/_generated/api"
-import type { Id } from "@/convex/_generated/dataModel"
 import {
-  Eyebrow,
   extFromMime,
+  Eyebrow,
   fmtTime,
   IconCheck,
   IconMic,
@@ -20,6 +18,8 @@ import {
   pickMimeType,
   useInterval,
 } from "@/components/recorder/primitives"
+import { api } from "@/convex/_generated/api"
+import type { Id } from "@/convex/_generated/dataModel"
 
 const CAP = 30 // seconds — a short welcome
 
@@ -60,7 +60,7 @@ export function GreetingRecorder({
       setElapsed(n)
       if (n >= CAP) stop()
     },
-    phase === "recording" ? 100 : null,
+    phase === "recording" ? 100 : null
   )
 
   const start = useCallback(async () => {
@@ -109,7 +109,10 @@ export function GreetingRecorder({
     const uppy = new Uppy({ autoProceed: false }).use(Transloadit, {
       waitForEncoding: true,
       assemblyOptions: async () => {
-        const { assemblyOptions } = await getOptions({ eventId, kind: "greeting" })
+        const { assemblyOptions } = await getOptions({
+          eventId,
+          kind: "greeting",
+        })
         return assemblyOptions as unknown as AssemblyOptions
       },
     })
@@ -156,7 +159,7 @@ export function GreetingRecorder({
             fontSize: 13.5,
             color: "var(--aloud-ink-soft)",
             marginTop: 4,
-            maxWidth: 180,
+            maxWidth: 220,
           }}
         >
           {err ?? "A short welcome guests hear first."}
@@ -175,7 +178,12 @@ export function GreetingRecorder({
 
         {phase === "recording" && (
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <LevelMeter active bars={16} color="var(--aloud-accent)" height={24} />
+            <LevelMeter
+              active
+              bars={16}
+              color="var(--aloud-accent)"
+              height={24}
+            />
             <span
               style={{
                 fontFamily: "var(--font-space-mono, monospace)",
@@ -192,7 +200,11 @@ export function GreetingRecorder({
 
         {phase === "preview" && previewUrl && (
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <audio src={previewUrl} controls style={{ height: 34, maxWidth: 200 }} />
+            <audio
+              src={previewUrl}
+              controls
+              style={{ height: 34, maxWidth: 200 }}
+            />
             <Pill onClick={start}>
               <IconRedo size={14} /> Redo
             </Pill>
@@ -245,7 +257,11 @@ function GreetingPlayer({ url, onRedo }: { url: string; onRedo: () => void }) {
           justifyContent: "center",
         }}
       >
-        {playing ? <IconPause size={15} /> : <IconPlay size={15} style={{ marginLeft: 2 }} />}
+        {playing ? (
+          <IconPause size={15} />
+        ) : (
+          <IconPlay size={15} style={{ marginLeft: 2 }} />
+        )}
       </button>
       <Pill onClick={onRedo}>
         <IconRedo size={14} /> Re-record
