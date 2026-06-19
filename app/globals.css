@@ -229,17 +229,16 @@ main, nav, footer { position: relative; z-index: 2; }
   font-family: var(--font-space-mono, monospace);
   font-size: 11px; color: var(--aloud-ink-faint); text-align: center; letter-spacing: -0.02em;
 }
-.phone-rec {
-  margin-top: auto; display: flex; align-items: center; justify-content: center; gap: 10px;
-  background: var(--aloud-accent); color: var(--aloud-accent-ink); border-radius: 999px;
-  padding: 14px; font-weight: 600; font-size: 14px; font-family: var(--font-hanken, system-ui);
+.phone-recording { margin-top: auto; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.phone-rec-top { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+.phone-rec-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--aloud-accent); display: block; }
+.phone-rec-label {
+  font-family: var(--font-hanken, system-ui); font-size: 11.5px; font-weight: 700;
+  letter-spacing: 0.07em; text-transform: uppercase; color: var(--aloud-accent);
 }
-.phone-rec .ring {
-  width: 18px; height: 18px; border-radius: 50%;
-  border: 2.4px solid var(--aloud-accent-ink);
-  display: flex; align-items: center; justify-content: center;
+.phone-rec-time {
+  font-family: var(--font-space-mono, monospace); font-size: 12.5px; color: var(--aloud-ink-faint);
 }
-.phone-rec .ring i { width: 7px; height: 7px; border-radius: 50%; background: var(--aloud-accent-ink); display: block; }
 
 /* ── share-page mock (behind the phone) ── */
 .share-mock {
@@ -521,7 +520,7 @@ main, nav, footer { position: relative; z-index: 2; }
   .phone-cover { height: 130px; }
   .phone-screen { padding: 26px 16px 18px; }
   .phone-names { font-size: 28px; }
-  .phone-rec { font-size: 13px; gap: 8px; }
+  .phone-recording { gap: 10px; }
 }
 
 @media (max-width: 520px) {

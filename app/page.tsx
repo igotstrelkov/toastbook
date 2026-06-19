@@ -1,6 +1,7 @@
 import { CreateGuestbookButton } from "@/components/landing/CreateGuestbookButton"
 import { CtaWave } from "@/components/landing/CtaWave"
 import { FooterAuthLink } from "@/components/landing/FooterAuthLink"
+import { HeroPhoneRecording } from "@/components/landing/HeroPhoneRecording"
 import { RecorderDemo } from "@/components/landing/RecorderDemo"
 import { RevealScript } from "@/components/landing/RevealScript"
 import { StickyNav } from "@/components/landing/StickyNav"
@@ -182,12 +183,7 @@ export default function Page() {
                     Maya <em>&amp;</em> Theo
                   </div>
                   <div className="phone-date">SEPTEMBER 14, 2026</div>
-                  <div className="phone-rec">
-                    <span className="ring">
-                      <i />
-                    </span>
-                    Record your message
-                  </div>
+                  <HeroPhoneRecording />
                 </div>
               </div>
             </div>
