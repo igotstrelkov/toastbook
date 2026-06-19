@@ -137,7 +137,7 @@ export function CreateEvent() {
           />
         </div>
 
-        <p
+        {/* <p
           style={{
             fontSize: 12.5,
             color: "var(--aloud-ink-faint)",
@@ -145,7 +145,7 @@ export function CreateEvent() {
           }}
         >
           A cover photo and a recorded welcome are coming soon.
-        </p>
+        </p> */}
 
         <Btn
           variant="accent"

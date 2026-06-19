@@ -241,6 +241,38 @@ main, nav, footer { position: relative; z-index: 2; }
 }
 .phone-rec .ring i { width: 7px; height: 7px; border-radius: 50%; background: var(--aloud-accent-ink); display: block; }
 
+/* ── share-page mock (behind the phone) ── */
+.share-mock {
+  position: absolute; z-index: 1;
+  top: 30px; right: -30px; width: 188px;
+  background: var(--aloud-paper-2); border: 1.4px solid var(--aloud-line);
+  border-radius: 20px; padding: 20px 18px; box-shadow: var(--shadow-card);
+  transform: rotate(7deg);
+  display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center;
+}
+.share-mock-qr {
+  background: var(--aloud-paper); padding: 12px; border-radius: 14px;
+  box-shadow: 0 0 0 1px rgba(40,28,18,0.06);
+}
+.share-mock-qr img { display: block; width: 108px; height: 108px; }
+.share-mock-names {
+  font-family: var(--font-newsreader, Georgia, serif); font-size: 18px; line-height: 1.05;
+}
+.share-mock-names em { font-style: italic; color: var(--aloud-accent); }
+.share-mock-label {
+  font-family: var(--font-space-mono, monospace);
+  font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--aloud-ink-faint);
+}
+@media (max-width: 880px) { .share-mock { display: none; } }
+@keyframes bob-tilt {
+  0%,100% { transform: rotate(7deg) translateY(0); }
+  50% { transform: rotate(7deg) translateY(-9px); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .share-mock { animation: bob-tilt 7s ease-in-out infinite .3s; }
+}
+
 /* ── floating voice cards ── */
 .float-card {
   position: absolute; z-index: 3;

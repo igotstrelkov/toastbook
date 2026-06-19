@@ -30,10 +30,7 @@ export default function ThanksPage() {
         color: "var(--aloud-ink)",
       }}
     >
-      <div
-        className="eyebrow"
-        style={{ color: "var(--aloud-ink-faint)" }}
-      >
+      <div className="eyebrow" style={{ color: "var(--aloud-ink-faint)" }}>
         You&apos;re in
       </div>
       <h1
@@ -61,7 +58,7 @@ export default function ThanksPage() {
       </p>
       <div style={{ display: "flex", gap: 12, marginTop: 6 }}>
         <Link
-          href="/dashboard"
+          href="/dashboard/new"
           style={{
             textDecoration: "none",
             border: "none",
@@ -74,7 +71,7 @@ export default function ThanksPage() {
             color: "var(--aloud-accent-ink)",
           }}
         >
-          Go to your dashboard
+          + Create a guestbook
         </Link>
         <Link
           href="/"

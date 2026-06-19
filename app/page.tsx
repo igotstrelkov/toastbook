@@ -151,6 +151,18 @@ export default function Page() {
                 </span>
               </div>
 
+              {/* share-page mock — sits behind the phone, the host's view */}
+              <div className="share-mock">
+                <div className="share-mock-qr">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/qr-sample.png" alt="" width={108} height={108} />
+                </div>
+                <div className="share-mock-names">
+                  Maya <em>&amp;</em> Theo
+                </div>
+                <div className="share-mock-label">Scan to leave a message</div>
+              </div>
+
               {/* phone mock */}
               <div className="phone">
                 <div className="phone-notch" aria-hidden="true" />
