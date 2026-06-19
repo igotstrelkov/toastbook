@@ -29,6 +29,14 @@ export function trackPlaySample(): void {
   window.plausible?.("PlayedSample")
 }
 
+// Funnel: host opened the sign-up modal — intent, fired before completion.
+// Splits the funnel so we can see CTA-click drop-off vs in-modal drop-off.
+export function trackSignupStarted(): void {
+  if (typeof window === "undefined") return
+  debug("StartedSignup")
+  window.plausible?.("StartedSignup")
+}
+
 // Funnel: a signup completed (fired once on the /thanks page). Also fires the
 // Google Ads conversion.
 export function trackSignupCompleted(): void {

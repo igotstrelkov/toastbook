@@ -5,6 +5,7 @@ import Link from "next/link"
 import type { ComponentProps } from "react"
 
 import { Button } from "@/components/ui/button"
+import { trackSignupStarted } from "@/lib/analytics"
 
 type ButtonProps = ComponentProps<typeof Button>
 
@@ -26,14 +27,18 @@ export function CreateGuestbookButton({
   }
 
   return (
-    <SignInButton
-      mode="modal"
-      forceRedirectUrl="/dashboard"
-      signUpForceRedirectUrl="/thanks"
-    >
-      <Button type="button" {...props}>
-        {children}
-      </Button>
-    </SignInButton>
+    // Parent span catches the click (bubbling) to fire the funnel event,
+    // independent of how SignInButton wires its child's onClick.
+    <span onClick={trackSignupStarted} style={{ display: "contents" }}>
+      <SignInButton
+        mode="modal"
+        forceRedirectUrl="/dashboard"
+        signUpForceRedirectUrl="/thanks"
+      >
+        <Button type="button" {...props}>
+          {children}
+        </Button>
+      </SignInButton>
+    </span>
   )
 }
