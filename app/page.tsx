@@ -1,6 +1,7 @@
 import { CreateGuestbookButton } from "@/components/landing/CreateGuestbookButton"
-import { FooterAuthLink } from "@/components/landing/FooterAuthLink"
 import { CtaWave } from "@/components/landing/CtaWave"
+import { FooterAuthLink } from "@/components/landing/FooterAuthLink"
+import { RecorderDemo } from "@/components/landing/RecorderDemo"
 import { RevealScript } from "@/components/landing/RevealScript"
 import { StickyNav } from "@/components/landing/StickyNav"
 import { VoiceSection } from "@/components/landing/VoiceSection"
@@ -258,20 +259,21 @@ export default function Page() {
         {/* ── Sample voices (interactive client island) ── */}
         <VoiceSection />
 
-        {/* ── Mid-page CTA — capitalises on the emotional peak right after
-            hearing the samples ── */}
-        <section className="section">
-          <div className="wrap cta-mid reveal">
-            <p className="cta-mid-line">
-              Now imagine these in <em>your</em> voices.
-            </p>
-            <CreateGuestbookButton
-              variant="accent"
-              className="h-[54px] rounded-full px-6 text-base"
-            />
-            <p className="cta-reassure">
-              Free to set up · No credit card · €49 only when you keep it
-            </p>
+        {/* ── Try it (live recorder demo) — interactive proof right after the
+            samples, the PlayedSample emotional peak ── */}
+        <section className="section" id="try">
+          <div className="wrap">
+            <div className="section-head center reveal">
+              <div className="eyebrow">Try it</div>
+              <h2 className="section-title">
+                Now hear <em>your own</em> voice.
+              </h2>
+              <p className="section-sub">
+                This is exactly what your guests will do, no app, no account.
+                Record a quick test, nothing leaves this page.
+              </p>
+            </div>
+            <RecorderDemo />
           </div>
         </section>
 
@@ -359,7 +361,8 @@ export default function Page() {
                     <Tick /> Share a read-only gallery
                   </li>
                   <li style={{ opacity: 0.62 }}>
-                    <Tick /> Video messages <span className="soon-badge">Coming soon</span>
+                    <Tick /> Video messages{" "}
+                    <span className="soon-badge">Coming soon</span>
                   </li>
                 </ul>
                 {/* <Button

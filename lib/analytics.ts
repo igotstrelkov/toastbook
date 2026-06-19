@@ -29,6 +29,14 @@ export function trackPlaySample(): void {
   window.plausible?.("PlayedSample")
 }
 
+// Funnel: visitor recorded a message in the on-page demo — strong activation,
+// they've now felt the core action themselves.
+export function trackTriedRecording(): void {
+  if (typeof window === "undefined") return
+  debug("TriedRecording")
+  window.plausible?.("TriedRecording")
+}
+
 // Funnel: host opened the sign-up modal — intent, fired before completion.
 // Splits the funnel so we can see CTA-click drop-off vs in-modal drop-off.
 export function trackSignupStarted(): void {
