@@ -7,6 +7,10 @@ import { VoiceSection } from "@/components/landing/VoiceSection"
 import { Button } from "@/components/ui/button"
 import { Check, Download, Plus, QrCode } from "lucide-react"
 
+// TODO(social-proof): PLACEHOLDER — these quotes are fabricated. Do NOT ship.
+// Replace with real, permissioned testimonials from actual couples before
+// uncommenting the Testimonials section below.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const testimonials = [
   {
     text: "We have a thousand photos. But hearing my dad's voice from that night, that's the thing I play when I miss him.",
@@ -254,7 +258,25 @@ export default function Page() {
         {/* ── Sample voices (interactive client island) ── */}
         <VoiceSection />
 
-        {/* ── Testimonials ── */}
+        {/* ── Mid-page CTA — capitalises on the emotional peak right after
+            hearing the samples ── */}
+        <section className="section">
+          <div className="wrap cta-mid reveal">
+            <p className="cta-mid-line">
+              Now imagine these in <em>your</em> voices.
+            </p>
+            <CreateGuestbookButton
+              variant="accent"
+              className="h-[54px] rounded-full px-6 text-base"
+            />
+            <p className="cta-reassure">
+              Free to set up · No credit card · €49 only when you keep it
+            </p>
+          </div>
+        </section>
+
+        {/* ── Testimonials ── HELD: enable only once `testimonials` above holds
+            real, permissioned quotes (see TODO at top of file). ── */}
         {/* <section className="section">
           <div className="wrap">
             <div className="section-head center reveal">

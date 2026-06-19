@@ -440,6 +440,16 @@ main, nav, footer { position: relative; z-index: 2; }
 .faq .ans { font-size: 15.5px; line-height: 1.65; color: var(--aloud-ink-soft); padding: 0 40px 24px 0; margin: 0; }
 
 /* ── closing CTA ── */
+/* ── mid-page CTA (after Listen) ── */
+.cta-mid { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 22px; }
+.cta-mid-line {
+  font-family: var(--font-newsreader, Georgia, serif); font-style: italic; font-weight: 400;
+  font-size: clamp(28px, 4.2vw, 46px); line-height: 1.08; letter-spacing: -0.018em;
+  max-width: 16ch; text-wrap: balance;
+}
+.cta-mid-line em { color: var(--aloud-accent); }
+.cta-reassure { font-size: 13px; color: var(--aloud-ink-faint); margin-top: -6px; }
+
 .cta-band { text-align: center; }
 .cta-band .big {
   font-family: var(--font-newsreader, Georgia, serif); font-weight: 400; font-style: italic;
