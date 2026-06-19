@@ -16,7 +16,7 @@ export function FooterAuthLink({ children }: { children: ReactNode }) {
     <SignInButton
       mode="modal"
       forceRedirectUrl="/dashboard"
-      signUpForceRedirectUrl="/dashboard"
+      signUpForceRedirectUrl="/thanks"
     >
       <button type="button">{children}</button>
     </SignInButton>

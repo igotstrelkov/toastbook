@@ -1,5 +1,6 @@
 "use client"
 
+import { trackPlaySample } from "@/lib/analytics"
 import { seededBars } from "@/lib/bars"
 import { useCallback, useEffect, useRef, useState } from "react"
 
@@ -97,6 +98,7 @@ export function VoiceSection() {
   const rafRef = useRef<number | null>(null)
   const currentRef = useRef<number | null>(null)
   const tickRef = useRef<() => void>(() => {})
+  const playedOnceRef = useRef(false)
 
   const cancelRaf = useCallback(() => {
     if (rafRef.current !== null) {
@@ -129,6 +131,11 @@ export function VoiceSection() {
 
   const play = useCallback(
     (idx: number) => {
+      // Funnel event — fire once on the first sample play.
+      if (!playedOnceRef.current) {
+        playedOnceRef.current = true
+        trackPlaySample()
+      }
       // Only one plays at a time — pause any other and reset its UI state.
       const prev = currentRef.current
       if (prev !== null && prev !== idx) {

@@ -106,9 +106,9 @@ export function HostHome() {
             <p style={{ marginTop: 10, marginBottom: 16, fontSize: 14 }}>
               No guestbooks yet.
             </p>
-            <Link href="/dashboard/new" style={createBtn}>
+            {/* <Link href="/dashboard/new" style={createBtn}>
               + Create a guestbook
-            </Link>
+            </Link> */}
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>

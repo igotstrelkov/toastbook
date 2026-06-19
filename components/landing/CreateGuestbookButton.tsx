@@ -29,7 +29,7 @@ export function CreateGuestbookButton({
     <SignInButton
       mode="modal"
       forceRedirectUrl="/dashboard"
-      signUpForceRedirectUrl="/dashboard"
+      signUpForceRedirectUrl="/thanks"
     >
       <Button type="button" {...props}>
         {children}

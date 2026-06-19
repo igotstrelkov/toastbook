@@ -58,6 +58,8 @@ export default function RootLayout({
   // The waitlist form only renders when Clerk is configured; without a key the
   // app still builds and the modal shows a setup hint instead.
   const clerkEnabled = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+  const plausibleSrc = process.env.NEXT_PUBLIC_PLAUSIBLE_SRC
+  const gadsId = process.env.NEXT_PUBLIC_GADS_ID
 
   const tree = (
     <html
@@ -72,19 +74,35 @@ export default function RootLayout({
       )}
     >
       <body>
-        {/* Google tag (gtag.js) — Google Ads conversion tracking, site-wide */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=AW-18247886696"
-          strategy="afterInteractive"
-        />
-        <Script id="gtag-init" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'AW-18247886696');
-          `}
-        </Script>
+        {/* Plausible — cookieless analytics + custom events (PlayedSample,
+            SignupCompleted). The site-specific script URL carries the domain
+            config; the shim queues plausible(...) calls and runs init() so
+            pageviews fire once the script loads. */}
+        {plausibleSrc && (
+          <>
+            <Script src={plausibleSrc} strategy="afterInteractive" />
+            <Script id="plausible-init" strategy="afterInteractive">
+              {`window.plausible = window.plausible || function () { (plausible.q = plausible.q || []).push(arguments) };
+plausible.init = plausible.init || function (i) { plausible.o = i || {} };
+plausible.init();`}
+            </Script>
+          </>
+        )}
+        {/* Google tag (gtag.js) — Google Ads conversion on completed signup. */}
+        {gadsId && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${gadsId}`}
+              strategy="afterInteractive"
+            />
+            <Script id="gtag-init" strategy="afterInteractive">
+              {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${gadsId}');`}
+            </Script>
+          </>
+        )}
         <ThemeProvider>
           {/* Convex is wired to Clerk when configured; guests stay anonymous
               and still reach public functions. */}
@@ -104,7 +122,9 @@ export default function RootLayout({
       // Force (not fallback) so we always land on the dashboard, even when
       // sign-in starts from "/" (which would otherwise return there).
       signInForceRedirectUrl="/dashboard"
-      signUpForceRedirectUrl="/dashboard"
+      // New signups land on /thanks (fires the conversion) then go on to the
+      // dashboard; returning sign-ins skip it.
+      signUpForceRedirectUrl="/thanks"
     >
       {tree}
     </ClerkProvider>
