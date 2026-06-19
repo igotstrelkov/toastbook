@@ -8,21 +8,40 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
 import "./globals.css"
 
+const SITE_URL = "https://toastbook.co"
+const DESCRIPTION =
+  "Guests scan one code and leave a spoken message — no app, no account. Keep a private gallery of every voice from your wedding day."
+
 export const metadata: Metadata = {
-  title: "Toastbook — A voice guestbook for weddings",
-  description:
-    "Guests scan one code and leave a spoken message — no app, no account. Keep a private gallery of every voice from your wedding day.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Toastbook — A voice guestbook for weddings",
+    template: "%s · Toastbook",
+  },
+  description: DESCRIPTION,
+  applicationName: "Toastbook",
+  keywords: [
+    "voice guestbook",
+    "audio guestbook",
+    "wedding guestbook",
+    "wedding audio messages",
+    "QR wedding guestbook",
+    "wedding keepsake",
+    "voice messages wedding",
+  ],
+  alternates: { canonical: "/" },
   openGraph: {
     title: "Toastbook — A voice guestbook for weddings",
-    description:
-      "Guests scan one code and leave a spoken message — no app, no account. Keep a private gallery of every voice from your wedding day.",
+    description: DESCRIPTION,
     type: "website",
+    url: SITE_URL,
+    siteName: "Toastbook",
+    locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
     title: "Toastbook — A voice guestbook for weddings",
-    description:
-      "Guests scan one code and leave a spoken message — no app, no account.",
+    description: DESCRIPTION,
   },
 }
 

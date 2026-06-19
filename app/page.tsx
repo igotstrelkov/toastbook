@@ -12,7 +12,7 @@ import { Check, Download, Plus, QrCode } from "lucide-react"
 // TODO(social-proof): PLACEHOLDER — these quotes are fabricated. Do NOT ship.
 // Replace with real, permissioned testimonials from actual couples before
 // uncommenting the Testimonials section below.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 const testimonials = [
   {
     text: "We have a thousand photos. But hearing my dad's voice from that night, that's the thing I play when I miss him.",
@@ -58,6 +58,56 @@ const faqItems = [
   },
 ]
 
+const SITE_URL = "https://toastbook.co"
+
+// Structured data: brand entity + the FAQ (built from faqItems so there's one
+// source of truth) + the one-time price. Helps engines understand the page.
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#org`,
+      name: "Toastbook",
+      url: SITE_URL,
+      logo: `${SITE_URL}/icon.svg`,
+      email: "hello@toastbook.co",
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: "Toastbook",
+      description:
+        "A voice guestbook for weddings — guests leave a spoken message from one QR code.",
+      publisher: { "@id": `${SITE_URL}/#org` },
+    },
+    {
+      "@type": "Product",
+      name: "Toastbook — Voice guestbook for weddings",
+      description:
+        "Collect voice messages from your wedding guests via one QR code. Free to set up; a one-time €49 unlock keeps every message forever.",
+      brand: { "@id": `${SITE_URL}/#org` },
+      offers: {
+        "@type": "Offer",
+        price: "49",
+        priceCurrency: "EUR",
+        availability: "https://schema.org/InStock",
+        description:
+          "One-time unlock per wedding — download and keep every voice forever.",
+      },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: faqItems.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
+    },
+  ],
+}
+
 const WaveformMark = () => (
   <svg
     width="22"
@@ -81,6 +131,10 @@ const Tick = () => (
 export default function Page() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="grain-fixed" aria-hidden="true" />
       <StickyNav />
 
@@ -275,7 +329,7 @@ export default function Page() {
 
         {/* ── Testimonials ── HELD: enable only once `testimonials` above holds
             real, permissioned quotes (see TODO at top of file). ── */}
-        {/* <section className="section">
+        <section className="section">
           <div className="wrap">
             <div className="section-head center reveal">
               <div className="eyebrow">Loved by couples</div>
@@ -298,7 +352,7 @@ export default function Page() {
               ))}
             </div>
           </div>
-        </section> */}
+        </section>
 
         {/* ── Pricing ── */}
         <section className="section alt" id="pricing">
@@ -335,7 +389,9 @@ export default function Page() {
                 <CreateGuestbookButton
                   variant="ghost-brand"
                   className="h-12 w-full rounded-full text-sm"
-                />
+                >
+                  Start for free
+                </CreateGuestbookButton>
               </div>
               <div className="price-col feature">
                 <div className="eyebrow price-eyebrow">Keepsake · one-time</div>
