@@ -263,7 +263,6 @@ main, nav, footer { position: relative; z-index: 2; }
   font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--aloud-ink-faint);
 }
-@media (max-width: 880px) { .share-mock { display: none; } }
 @keyframes bob-tilt {
   0%,100% { transform: rotate(7deg) translateY(0); }
   50% { transform: rotate(7deg) translateY(-9px); }
@@ -521,6 +520,17 @@ main, nav, footer { position: relative; z-index: 2; }
   .phone-screen { padding: 26px 16px 18px; }
   .phone-names { font-size: 28px; }
   .phone-recording { gap: 10px; }
+  /* Share-card mock: stay visible on mobile, anchored peeking behind the phone
+     (its desktop right:-30px sits off-screen in the single-column layout). */
+  .share-mock {
+    top: 0; left: 50%; right: auto; width: 150px; padding: 16px 14px;
+    transform: translateX(28px) rotate(7deg); animation: none;
+  }
+  .share-mock-qr { padding: 10px; }
+  .share-mock-qr img { width: 92px; height: 92px; }
+  .share-mock-names { font-size: 16px; }
+  /* Clip the peek so it can never produce a horizontal scrollbar. */
+  .hero { overflow-x: clip; }
 }
 
 @media (max-width: 520px) {
@@ -536,6 +546,8 @@ main, nav, footer { position: relative; z-index: 2; }
   .aloud-nav { padding: 14px 16px; }
   /* Narrow phone to fit 320px screens; height/cover come from the ≤880px block */
   .phone { width: 240px; border-radius: 38px; }
+  /* Pull the QR peek in tighter so it fits the narrowest screens without clip */
+  .share-mock { width: 140px; transform: translateX(18px) rotate(7deg); }
   /* Footer nav columns stack vertically */
   .footer-cols { flex-direction: column; gap: 24px; }
 }
